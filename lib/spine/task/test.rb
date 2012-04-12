@@ -1,15 +1,15 @@
 module Spine
-  class Task
+  module Task
 
     [:is, :is?, :are, :are?, :does, :does?, :expect, :assert].each do |meth|
       define_method meth do |object = nil, &proc|
-        Evaluator.new true, self, __method__, object, &proc
+        ::Spine::Evaluator.new true, self, __method__, object, &proc
       end
     end
 
     [:refute, :false?].each do |meth|
       define_method meth do |object = nil, &proc|
-        Evaluator.new false, self, __method__, object, &proc
+        ::Spine::Evaluator.new false, self, __method__, object, &proc
       end
     end
 

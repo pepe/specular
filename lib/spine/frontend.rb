@@ -12,7 +12,8 @@ module Spine
 
     def run
       @tasks.each_pair do |task_proc, task_setup|
-        task = Spine::Task.new *task_setup, &task_proc
+        task_class = Class.new { include ::Spine::Task }
+        task = task_class.new *task_setup, &task_proc
         @output.concat task.output
         @total_specs += task.spine__total_specs
         @total_scenarios += task.spine__total_scenarios

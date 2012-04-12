@@ -1,5 +1,5 @@
 module Spine
-  class Task
+  module Task
 
     include Utils
 

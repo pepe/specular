@@ -1,5 +1,5 @@
 module Spine
-  class Task
+  module Task
 
     [:Given, :When, :Then, :It, :If, :Let, :Say, :Assume, :Suppose, :And, :But, :Should].each do |prefix|
       define_method prefix do |*args, &proc|

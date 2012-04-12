@@ -1,5 +1,5 @@
 module Spine
-  class Task
+  module Task
 
     def before &proc
       @__spine__vars_pool__.hooks[:a][spine__context.dup] = proc
