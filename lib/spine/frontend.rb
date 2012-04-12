@@ -1,5 +1,6 @@
 module Spine
   class Frontend
+
     include Utils
 
     def initialize tasks, opts = {}
@@ -14,7 +15,7 @@ module Spine
       @tasks.each_pair do |task_proc, task_setup|
         task_class = Class.new { include ::Spine::Task }
         task = task_class.new *task_setup, &task_proc
-        @output.concat task.output
+        @output.concat task.spine__output
         @total_specs += task.spine__total_specs
         @total_scenarios += task.spine__total_scenarios
         @skipped_scenarios.concat task.spine__skipped_scenarios
@@ -59,7 +60,7 @@ module Spine
     def failed_tests
       reset_stdout
       return stdout unless @failed_tests.size > 0
-      nl; stdout "--- Failed Tests ---", 0, :w
+      nl; stdout "--- Failed Tests ---", 0, :warn
       backtrace_alert = nil
       nl
       @failed_tests.each_value do |tests|
@@ -71,7 +72,7 @@ module Spine
           stdout task
           stdout spec, 1
           stdout scenario, ident - 1
-          stdout [a(test), error[:source]].join(' at '), ident
+          stdout [Colorize.alert(test), error[:source]].join(' at '), ident
 
           if (exception = error[:exception]).is_a?(Exception)
             stdout exception.message, ident, :e
@@ -84,9 +85,9 @@ module Spine
             end
           else
             message = error[:message] ? e(error[:message].to_s.strip) : '%s %s %s %s' % [
-                w(error[:proxy]),
+                Colorize.warn(error[:proxy]),
                 error[:object],
-                w(error[:method]),
+                Colorize.warn(error[:method]),
                 (error[:expected]||[]).compact.join(', ')
             ]
             stdout message, ident
@@ -110,7 +111,7 @@ module Spine
       stdout 'Tests:       %s%s' % [
           @total_tests,
           @failed_tests_amount > 0 ? ' (%s failed)' % @failed_tests_amount : '',
-      ], 0, @failed_tests_amount > 0 ? :red : :green
+      ], 0, @failed_tests_amount > 0 ? :error : :success
       stdout
     end
 
@@ -138,7 +139,7 @@ module Spine
         return output
       end
       str = [' '*(2*ident), chunk].join
-      (@stdout||reset_stdout) << (color ? self.send(color, str) : str)
+      (@stdout||reset_stdout) << (color ? Colorize.send(color, str) : str)
     end
 
   end

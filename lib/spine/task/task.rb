@@ -7,9 +7,19 @@ module Spine
 
       proc || raise('--- tasks need a proc to run ---')
 
+      output, host = [], self
+      [:info, :success, :warn, :alert, :error].each do |meth|
+        output.define_singleton_method meth do |snippet|
+          self << [snippet.to_s, host.spine__nesting_level, meth]
+        end
+      end
+      output.define_singleton_method :br do
+        self << ['']
+      end
+
       vars = {
           instance_variables: {}, nesting_level: 0, context: [],
-          output: [], source_files: {},
+          output: output, source_files: {},
           current_task: {label: label, proc: proc},
           current_spec: nil, total_specs: 0,
           current_scenario: nil, total_scenarios: 0, skipped_scenarios: [], failed_scenarios: [],
@@ -18,7 +28,8 @@ module Spine
       }
       @__spine__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
 
-      nl; output label.to_s
+      o.br
+      o label
       spine__nesting_level :+
 
       self.instance_exec &proc
@@ -27,6 +38,14 @@ module Spine
     def helper mdl
       self.class.class_exec { include mdl }
     end
+
+    def spine__output s = nil
+      return @__spine__vars_pool__.output.info(s) if s
+      @__spine__vars_pool__.output
+    end
+
+    alias o spine__output
+    alias d spine__output
 
     def spine__context
       @__spine__vars_pool__.context
@@ -53,20 +72,11 @@ module Spine
       @__spine__vars_pool__.nesting_level
     end
 
-    def output output = nil, color = nil
-      @__spine__vars_pool__.output << [output, spine__nesting_level, color] if output
-      @__spine__vars_pool__.output
-    end
-
-    def nl
-      output ''
-    end
-
-    def ivar_set var, val
+    def spine__ivar_set var, val
       @__spine__vars_pool__.instance_variables[var] = val
     end
 
-    def ivar_get var
+    def spine__ivar_get var
       @__spine__vars_pool__.instance_variables[var]
     end
 

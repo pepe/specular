@@ -6,7 +6,7 @@ module Spine
       raise('--- specs can not be defined inside specs ---') if spine__current_spec
       raise('--- specs can not be defined inside scenarios ---') if spine__current_scenario
 
-      output label
+      o label
       spine__total_specs :+
 
       spine__current_spec label: label, proc: proc

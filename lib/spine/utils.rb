@@ -5,50 +5,33 @@ module Spine
       proc.source_location.join(':')
     end
 
-    module Colors
-      def red str, ec = 0
-        colorize(str, "\e[#{ ec }m\e[31m");
-      end
+    module Colorize
+      class << self
+        def info str
+          str
+        end
 
-      alias e red
+        def error str, ec = 0
+          colorize(str, "\e[#{ ec }m\e[31m");
+        end
 
-      def green str, ec = 0
-        colorize(str, "\e[#{ ec }m\e[32m");
-      end
+        def success str, ec = 0
+          colorize(str, "\e[#{ ec }m\e[32m");
+        end
 
-      alias s green
+        def alert str, ec = 0
+          colorize(str, "\e[#{ ec }m\e[34m");
+        end
 
-      def yellow str, ec = 0
-        colorize(str, "\e[#{ ec }m\e[33m");
-      end
+        def warn str, ec = 0
+          colorize(str, "\e[#{ ec }m\e[35m");
+        end
 
-      def blue str, ec = 0
-        colorize(str, "\e[#{ ec }m\e[34m");
-      end
-
-      alias a blue
-
-      def magenta str, ec = 0
-        colorize(str, "\e[#{ ec }m\e[35m");
-      end
-
-      alias w magenta
-
-      def cyan str, ec = 0
-        colorize(str, "\e[#{ ec }m\e[36m");
-      end
-
-      def white str, ec = 0
-        colorize(str, "\e[#{ ec }m\e[37m");
-      end
-
-      def colorize(text, color_code)
-        "#{color_code}#{text}\e[0m"
+        def colorize(text, color_code)
+          "#{color_code}#{text}\e[0m"
+        end
       end
     end
-    class << self
-      include Colors
-    end
-    include Colors
+
   end
 end

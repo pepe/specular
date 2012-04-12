@@ -12,7 +12,7 @@ module Spine
       proc || raise('--- scenarios need a proc to run ---')
 
       label = [prefix, goal].join(' ')
-      output label
+      o label
 
       spine__total_scenarios :+
 
