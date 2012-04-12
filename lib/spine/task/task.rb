@@ -28,8 +28,8 @@ module Spine
       }
       @__spine__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
 
-      o.br
-      o label
+      spine__output.br
+      spine__output label
       spine__nesting_level :+
 
       self.instance_exec &proc
