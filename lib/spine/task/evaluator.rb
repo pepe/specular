@@ -126,7 +126,7 @@ module Spine
 
       def evaluate error = {}, &proc
 
-        if @host.spine__scenario_failed?
+        if @host.spine__failures?
           return @host.output(' - test skipped due to previous failures', :w)
         end
 
@@ -156,7 +156,6 @@ module Spine
 
       def failed error = {}
         @host.output '- failed', :e
-        @host.spine__scenario_failed
         @host.spine__failed_tests @test, error.update(object: object, source: [@file, @line].join(':'))
         false
       end

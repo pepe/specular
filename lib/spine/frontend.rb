@@ -61,13 +61,13 @@ module Spine
       nl; stdout "--- Failed Tests ---", 0, :w
       backtrace_alert = nil
       nl
-      @failed_tests.each_pair do |task, tests|
-        stdout task
+      @failed_tests.each_value do |tests|
         @failed_tests_amount += tests.size
         tests.each do |setup|
 
-          spec, scenario, test, error, ident = setup
+          task, spec, scenario, test, error, ident = setup
 
+          stdout task
           stdout spec, 1
           stdout scenario, ident - 1
           stdout [a(test), error[:source]].join(' at '), ident

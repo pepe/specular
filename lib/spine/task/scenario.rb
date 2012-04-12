@@ -18,11 +18,7 @@ module Spine
 
       spine__scenario_skipped if opts[:skip]
 
-      if spine__scenario_skipped?
-        return output(' - scenario skipped explicitly', :w)
-      elsif spine__scenario_failed?
-        return output(' - scenario skipped due to previous failures', :w)
-      end
+      return output(' - scenario skipped explicitly', :w) if spine__scenario_skipped?
 
       prev_scenario = spine__current_scenario
       spine__current_scenario label: label, proc: proc
@@ -58,17 +54,6 @@ module Spine
 
     def spine__scenario_skipped?
       @__spine__vars_pool__.skipped_scenarios.include? spine__current_scenario
-    end
-
-    def spine__scenario_failed
-      @__spine__vars_pool__.failed_scenarios << spine__context.dup
-    end
-
-    def spine__scenario_failed?
-      @__spine__vars_pool__.failed_scenarios.each do |context|
-        return true if spine__context[0, context.size] == context
-      end
-      nil
     end
 
   end

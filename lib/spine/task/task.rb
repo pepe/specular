@@ -40,6 +40,13 @@ module Spine
       @__spine__vars_pool__.source_files
     end
 
+    def spine__failures?
+      spine__failed_tests.each_key do |context|
+        return true if spine__context[0, context.size] == context
+      end
+      nil
+    end
+
     def spine__nesting_level op = nil
       @__spine__vars_pool__.nesting_level += 1 if op == :+
       @__spine__vars_pool__.nesting_level -= 1 if op == :-
