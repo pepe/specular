@@ -2,19 +2,17 @@ module Spine
   class Task
 
     def before &proc
-      (@__spine__vars_pool__.hooks[:a][current_scenario[:proc]||'*']||=[]) << proc if proc
+      @__spine__vars_pool__.hooks[:a][spine__context.dup] = proc
     end
 
     def after &proc
-      (@__spine__vars_pool__.hooks[:z][current_scenario[:proc]||'*']||=[]) << proc if proc
+      @__spine__vars_pool__.hooks[:z][spine__context.dup] = proc
     end
 
-    # each scenario has own hooks. upper hooks wont be inherited.
     def spine__hooks position
-      [
-          (@__spine__vars_pool__.hooks[position]['*']),
-          #(@__spine__vars_pool__.hooks[position][spine__current_scenario[:proc]] if spine__current_scenario)
-      ].uniq.flatten.compact
+      @__spine__vars_pool__.hooks[position].map do |context, hook|
+        hook if spine__context[0, context.size] == context
+      end.compact
     end
 
   end

@@ -119,7 +119,7 @@ module Spine
 
     private
     def nl
-      stdout ""
+      stdout ''
     end
 
     def reset_stdout
