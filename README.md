@@ -39,29 +39,30 @@ Anything is done in natural, easy and rememberable way, without any object to be
 
 **Use**
 
-    class App
+```ruby
+class App
 
-        def some_method
-            'some text'
-        end
-
-        # writing tests
-        Spine.vertebra 'GenericTest' do
-
-            Should 'do a simple test' do
-            
-                text = App.new.some_method
-
-                is(body) == 'some text'
-                # - passed
-
-                does(body) =~ /text/
-                # - passed
-            end
-        end
+    def some_method
+        'some text'
     end
 
-    # running tests
-    tests = Spine.new
-    tests.run
-    puts tests.to_s
+    # writing tests
+    Spine.vertebra 'GenericTest' do
+
+        Should 'do a simple test' do
+
+            text = App.new.some_method
+
+            is(body) == 'some text'
+            # - passed
+
+            does(body) =~ /text/
+            # - passed
+        end
+    end
+end
+
+# running tests
+output = Spine.run
+puts output.to_s
+```
