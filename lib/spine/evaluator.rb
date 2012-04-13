@@ -51,17 +51,19 @@ module Spine
 
       is_a_exception = object.is_a? Exception
       is_a_exception_of_type = type ? object.class == type : nil
-      is_a_exception_matching = match ? object.to_s =~ (Regexp === match ? match : /#{Regexp.escape match.to_s}/) : nil
+      is_a_exception_matching = match ? object.to_s =~ (match.is_a?(Regexp) ? match : /#{Regexp.escape match.to_s}/) : nil
 
       message, proc = '%s expected an error to be raised' % @negative_keyword, lambda { is_a_exception }
       if type && match
-        message = ('%s expected an %s error matching "%s" to be raised' % [@negative_keyword, type, match.source])
+        message = ('%s expected an %s error matching "%s" to be raised but an %s error raised with message: %s' % [
+            @negative_keyword, type, match.source, object.class, object.to_s
+        ])
         proc = lambda { is_a_exception_of_type && is_a_exception_matching }
       elsif type
-        message = ('%s expected an %s error to be raised' % [@negative_keyword, type])
+        message = ('%s expected an %s error to be raised but %s raised instead' % [@negative_keyword, type, object.class])
         proc = lambda { is_a_exception_of_type }
       elsif match
-        message = ('%s expected raised error to match "%s"' % [@negative_keyword, match.source])
+        message = ('%s expected raised error to match "%s"' % [@negative_keyword, match])
         proc = lambda { is_a_exception_matching }
       end
       evaluate message: message, &proc
@@ -102,9 +104,9 @@ module Spine
         message = '%s expected %s [%s] with value %s [%s] to be thrown, got %s [%s] with value %s [%s]' %
             [@negative_keyword, symbol, symbol.class, value, value.class,
              caught_symbol, caught_symbol.class, caught_value, caught_value.class]
-        proc = lambda { symbol == caught_symbol && value == caught_value }
+        proc = lambda { symbol == caught_symbol && (value.is_a?(Regexp) ? caught_value.to_s =~ value : caught_value == value) }
       elsif symbol
-        message = '%s expected %s [%s] %s to be thrown, got %s [%s]' %
+        message = '%s expected %s [%s] to be thrown, got %s [%s]' %
             [@negative_keyword, symbol, symbol.class, caught_symbol, caught_symbol.class]
         proc = lambda { symbol == caught_symbol }
       end

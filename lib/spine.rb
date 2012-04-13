@@ -1,8 +1,8 @@
 module Spine
   class << self
 
-    def task *args, &proc
-      tasks[proc] = args
+    def task label = nil, &proc
+      tasks[proc] = label.to_s
     end
 
     alias vertebra task
@@ -11,8 +11,12 @@ module Spine
       @tasks ||= {}
     end
 
-    def new opts = {}
-      Spine::Frontend.new(tasks, opts)
+    def run *args
+      opts = args.last.is_a?(Hash) ? args.pop : {}
+      tasks = args.size > 0 ?
+          tasks().select { |p, l| args.select { |a| a.is_a?(Regexp) ? l =~ a : l == a.to_s }.size > 0 } :
+          tasks()
+      Spine::Frontend.new(tasks, opts).run
     end
   end
 end

@@ -1,8 +1,6 @@
 module Spine
   module Task
 
-    include Utils
-
     def initialize label = nil, &proc
 
       proc || raise('--- tasks need a proc to run ---')
@@ -12,10 +10,13 @@ module Spine
         output.define_singleton_method meth do |snippet|
           self << [snippet.to_s, task.spine__nesting_level, __method__]
           task.failed? &&
-              (task.spine__failed_tests.values.last[4][:details]||=[]) << [snippet.to_s, __method__]
+              (task.spine__last_error[:details]||=[]) << [snippet.to_s, __method__]
         end
       end
-      output.define_singleton_method :br do
+      output.define_singleton_method :last_error do
+        self.error task.spine__last_error[:message]
+      end
+      def output.br
         self << ['']
       end
 
@@ -25,7 +26,7 @@ module Spine
           current_task: {label: label, proc: proc},
           current_spec: nil, total_specs: 0,
           current_scenario: nil, total_scenarios: 0, skipped_scenarios: [], failed_scenarios: [],
-          test: nil, test_passed: nil, total_tests: 0, failed_tests: {},
+          test: nil, test_passed: true, total_tests: 0, failed_tests: {},
           hooks: {a: {}, z: {}}, browser: nil,
       }
       @__spine__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
@@ -37,7 +38,11 @@ module Spine
       self.instance_exec &proc
     end
 
-    def helper mdl
+    def spine__last_error
+      spine__failed_tests.values.last[4]
+    end
+
+    def include mdl
       self.class.class_exec { include mdl }
     end
 
