@@ -7,16 +7,12 @@ module Spine
 
       proc || raise('--- tasks need a proc to run ---')
 
-      output, host = [], self
+      output, task = [], self
       [:info, :success, :warn, :alert, :error].each do |meth|
         output.define_singleton_method meth do |snippet|
-          self << [snippet.to_s, host.spine__nesting_level, __method__]
-        end
-      end
-      output.define_singleton_method :debug do |snippet|
-        self << [snippet.to_s, host.spine__nesting_level]
-        if host.failed?
-          (host.spine__failed_tests[host.spine__context.dup].last[4][:details]||=[]) << snippet.to_s
+          self << [snippet.to_s, task.spine__nesting_level, __method__]
+          task.failed? &&
+              (task.spine__failed_tests.values.last[4][:details]||=[]) << [snippet.to_s, __method__]
         end
       end
       output.define_singleton_method :br do
@@ -34,7 +30,7 @@ module Spine
       }
       @__spine__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
 
-      spine__output.br
+      spine__output ''
       spine__output label
       spine__nesting_level :+
 
@@ -45,13 +41,17 @@ module Spine
       self.class.class_exec { include mdl }
     end
 
-    def spine__output s = nil
+    def o s = nil
       return @__spine__vars_pool__.output.info(s) if s
       @__spine__vars_pool__.output
     end
 
-    alias o spine__output
-    alias d spine__output
+    alias d o
+
+    def spine__output snippet = nil, color = nil
+      @__spine__vars_pool__.output << [snippet.to_s, spine__nesting_level, color].compact if snippet
+      @__spine__vars_pool__.output
+    end
 
     def spine__context
       @__spine__vars_pool__.context

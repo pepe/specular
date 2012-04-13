@@ -63,39 +63,40 @@ module Spine
       nl; stdout "--- Failed Tests ---", 0, :warn
       backtrace_alert = nil
       nl
-      @failed_tests.each_value do |tests|
-        @failed_tests_amount += tests.size
-        tests.each do |setup|
+      @failed_tests.each_value do |setup|
+        @failed_tests_amount += 1
 
-          task, spec, scenario, test, error, ident = setup
+        task, spec, scenario, test, error, ident = setup
 
-          stdout task
-          stdout spec, 1
-          stdout scenario, ident - 1
-          stdout [Colorize.alert(test), error[:source]].join(' at '), ident
+        stdout task
+        stdout spec, 1
+        stdout scenario, ident - 1
+        stdout [Colorize.alert(test), error[:source]].join(' at '), ident
 
-          if (exception = error[:exception]).is_a?(Exception)
-            stdout exception.message, ident, :e
-            if backtrace = exception.backtrace
-              if @opts[:trace]
-                backtrace.each { |s| stdout s, ident, :w }
-              else
-                backtrace_alert = true
-              end
+        if (exception = error[:exception]).is_a?(Exception)
+          stdout exception.message, ident, :error
+          if backtrace = exception.backtrace
+            if @opts[:trace]
+              backtrace.each { |s| stdout s, ident, :w }
+            else
+              backtrace_alert = true
             end
-          else
-            message = error[:message] ? e(error[:message].to_s.strip) : '%s %s %s %s' % [
-                Colorize.warn(error[:proxy]),
-                error[:object],
-                Colorize.warn(error[:method]),
-                (error[:expected]||[]).compact.join(', ')
-            ]
-            stdout message, ident
           end
-          if details = error[:details]
-            details.each { |e| stdout e, ident }
-          end
+        else
+          message = error[:message] ?
+              Colorize.error(error[:message].to_s.strip) :
+              '%s %s %s %s' % [
+                  Colorize.warn(error[:proxy]),
+                  error[:object],
+                  Colorize.warn(error[:method]),
+                  (error[:expected]||[]).compact.join(', ')
+              ]
+          stdout message, ident
         end
+        if details = error[:details]
+          details.each { |e| stdout e[0], ident, e[1] }
+        end
+
       end
 
       nl

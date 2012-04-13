@@ -28,7 +28,7 @@ module Spine
     end
 
     def spine__failed_tests test = nil, error = nil
-      (@__spine__vars_pool__.failed_tests[spine__context.dup] ||= []) << [
+      @__spine__vars_pool__.failed_tests[spine__context.dup] = [
           (spine__current_task || {})[:label],
           (spine__current_spec || {})[:label],
           (spine__current_scenario || {})[:label],
