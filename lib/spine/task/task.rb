@@ -18,12 +18,12 @@ module Spine
       end
 
       vars = {
-          instance_variables: {}, nesting_level: 0, context: [],
+          nesting_level: 0, context: [],
           output: output, source_files: {},
           current_task: {label: label, proc: proc},
           current_spec: nil, total_specs: 0,
           current_scenario: nil, total_scenarios: 0, skipped_scenarios: [], failed_scenarios: [],
-          test: nil, total_tests: 0, failed_tests: {},
+          test: nil, test_passed: nil, total_tests: 0, failed_tests: {},
           hooks: {a: {}, z: {}}, browser: nil,
       }
       @__spine__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
@@ -70,14 +70,6 @@ module Spine
       @__spine__vars_pool__.nesting_level += 1 if op == :+
       @__spine__vars_pool__.nesting_level -= 1 if op == :-
       @__spine__vars_pool__.nesting_level
-    end
-
-    def spine__ivar_set var, val
-      @__spine__vars_pool__.instance_variables[var] = val
-    end
-
-    def spine__ivar_get var
-      @__spine__vars_pool__.instance_variables[var]
     end
 
   end

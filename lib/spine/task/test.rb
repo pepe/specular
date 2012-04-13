@@ -14,8 +14,8 @@ module Spine
     end
 
     def passed? *args
-      spine__ivar_set :passed, args.first if args.size > 0
-      spine__ivar_get :passed
+      @__spine__vars_pool__.test_passed = args.first if args.size > 0
+      @__spine__vars_pool__.test_passed
     end
 
     def failed?
