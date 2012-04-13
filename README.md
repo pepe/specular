@@ -66,3 +66,5 @@ end
 output = Spine.run
 puts output.to_s
 ```
+
+<img src="http://prestorb.org/spine/example.png">
