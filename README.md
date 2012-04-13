@@ -51,7 +51,7 @@ class App
 
         Should 'do a simple test' do
 
-            text = App.new.some_method
+            body = App.new.some_method
 
             is(body) == 'some text'
             # - passed
