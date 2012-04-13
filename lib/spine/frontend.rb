@@ -93,7 +93,7 @@ module Spine
             stdout message, ident
           end
           if details = error[:details]
-            details.each { |e| stdout e, ident, :e }
+            details.each { |e| stdout e, ident }
           end
         end
       end

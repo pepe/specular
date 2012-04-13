@@ -10,7 +10,13 @@ module Spine
       output, host = [], self
       [:info, :success, :warn, :alert, :error].each do |meth|
         output.define_singleton_method meth do |snippet|
-          self << [snippet.to_s, host.spine__nesting_level, meth]
+          self << [snippet.to_s, host.spine__nesting_level, __method__]
+        end
+      end
+      output.define_singleton_method :debug do |snippet|
+        self << [snippet.to_s, host.spine__nesting_level]
+        if host.failed?
+          (host.spine__failed_tests[host.spine__context.dup].last[4][:details]||=[]) << snippet.to_s
         end
       end
       output.define_singleton_method :br do

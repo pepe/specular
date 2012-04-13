@@ -22,10 +22,6 @@ module Spine
       !passed?
     end
 
-    def error error
-      (failed_tests.last[3][:details]||=[]) << error
-    end
-
     def spine__total_tests op = nil
       @__spine__vars_pool__.total_tests += 1 if op == :+
       @__spine__vars_pool__.total_tests
