@@ -65,8 +65,7 @@ class App
 end
 
 # running tests
-output = Spine.run
-puts output.to_s
+puts Spine.run
 ```
 
 <img src="http://prestorb.org/spine/example.png">
