@@ -227,9 +227,9 @@ Let's play a bit...
     does?(foo).respond_to? bar
     # etc
 
-Looks nice?<br/>
+Looks nice.<br/>
 The main virtue - objects are kept pristine!<br/>
-And yes, it looks naturally.
+And yes, you can forget about documentation and books about unit testing.
 
 Here is a live example:
 
