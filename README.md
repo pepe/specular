@@ -44,7 +44,7 @@ Anything is done in natural, easy and rememberable way, without any object to be
 ```ruby
 class App
 
-    def some_method
+    def body
         'some text'
     end
 
@@ -53,7 +53,7 @@ class App
 
         Should 'do a simple test' do
 
-            body = App.new.some_method
+            body = App.new.body
 
             is(body) == 'some text'
             # - passed
