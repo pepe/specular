@@ -1,13 +1,14 @@
 module Spine
   module Task
 
-    def initialize label = nil, &proc
+    def initialize name = nil, opts = {}, &proc
 
       proc || raise('--- tasks need a proc to run ---')
 
       output, task = [], self
       [:info, :success, :warn, :alert, :error].each do |meth|
         output.define_singleton_method meth do |snippet|
+          return if task.spine__context_skipped?
           self << [snippet.to_s, task.spine__nesting_level, __method__]
           task.failed? &&
               (task.spine__last_error[:details]||=[]) << [snippet.to_s, __method__]
@@ -16,6 +17,7 @@ module Spine
       output.define_singleton_method :last_error do
         self.error task.spine__last_error[:message]
       end
+
       def output.br
         self << ['']
       end
@@ -23,23 +25,27 @@ module Spine
       vars = {
           nesting_level: 0, context: [],
           output: output, source_files: {},
-          current_task: {label: label, proc: proc},
-          current_spec: nil, total_specs: 0,
-          current_scenario: nil, total_scenarios: 0, skipped_scenarios: [], failed_scenarios: [],
-          test: nil, test_passed: true, total_tests: 0, failed_tests: {},
+          current_task: {name: name, proc: proc}, skipped_tasks: {},
+          current_spec: nil, total_specs: 0, skipped_specs: {},
+          current_scenario: nil, total_scenarios: 0, skipped_scenarios: {},
+          test_passed: true, total_tests: 0, failed_tests: {},
           hooks: {a: {}, z: {}}, browser: nil,
       }
       @__spine__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
 
-      spine__output ''
-      spine__output label
-      spine__nesting_level :+
+      if opts[:skip]
+        spine__task_skipped
+      else
+        spine__output ''
+        spine__output name
+        spine__nesting_level :+
+      end
 
       self.instance_exec &proc
     end
 
     def spine__last_error
-      spine__failed_tests.values.last[4]
+      (spine__failed_tests.values.last || [])[4] || {}
     end
 
     def include mdl
@@ -62,8 +68,27 @@ module Spine
       @__spine__vars_pool__.context
     end
 
+    def spine__context_skipped?
+      spine__task_skipped? || spine__spec_skipped? || spine__scenario_skipped?
+    end
+
     def spine__current_task
       @__spine__vars_pool__.current_task
+    end
+
+    def spine__skipped_tasks
+      @__spine__vars_pool__.skipped_tasks
+    end
+
+    def spine__task_skipped
+      spine__skipped_tasks[spine__context.dup] = spine__current_task
+    end
+
+    def spine__task_skipped?
+      spine__skipped_tasks.each_key do |context|
+        return true if spine__context[0, context.size] == context
+      end
+      nil
     end
 
     def spine__source_files

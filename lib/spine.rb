@@ -1,20 +1,21 @@
 module Spine
   class << self
 
-    def task label = nil, &proc
-      tasks[proc] = label.to_s
+    def task *args, &proc
+      opts = args.last.is_a?(Hash) ? args.pop : {}
+      tasks << [args.first.to_s, opts, proc]
     end
 
     alias vertebra task
 
     def tasks
-      @tasks ||= {}
+      @tasks ||= []
     end
 
     def run *args
       opts = args.last.is_a?(Hash) ? args.pop : {}
       tasks = args.size > 0 ?
-          tasks().select { |p, l| args.select { |a| a.is_a?(Regexp) ? l =~ a : l == a.to_s }.size > 0 } :
+          tasks().select { |t| args.select { |a| a.is_a?(Regexp) ? t[0] =~ a : t[0] == a.to_s }.size > 0 } :
           tasks()
       Spine::Frontend.new(tasks, opts).run
     end

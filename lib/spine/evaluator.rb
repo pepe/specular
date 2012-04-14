@@ -7,14 +7,10 @@ module Spine
 
       @negative_keyword = @assert_is == false ? 'NOT' : ''
 
-      # any test is considered failed until it is explicitly passed
-      @task.passed? false
-
       @file, @line = caller[2].split(/\:in\s+`/).first.scan(/(.*)\:(\d+)$/).flatten
       @task.spine__source_files[@file] ||= ::File.readlines(@file)
       @test = @task.spine__source_files[@file][@line.to_i-1].strip
 
-      @task.spine__output @test, :alert
       @task.spine__total_tests :+
     end
 
@@ -127,9 +123,16 @@ module Spine
 
     def evaluate error = {}, &proc
 
+      return if @task.spine__context_skipped?
+
+      @task.spine__output @test, :alert
+
       if @task.spine__failures?
         return @task.spine__output ' - test skipped due to previous failures', :warn
       end
+
+      # any test is considered failed until it is explicitly passed
+      @task.passed? false
 
       begin
 

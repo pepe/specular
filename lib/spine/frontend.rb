@@ -6,21 +6,30 @@ module Spine
     def initialize tasks, opts = {}
       @tasks, @opts = tasks, opts
       @output = []
-      @total_specs, @skipped_specs = 0, []
-      @total_scenarios, @skipped_scenarios = 0, []
+      @skipped_tasks = {}
+      @total_specs, @skipped_specs = 0, {}
+      @total_scenarios, @skipped_scenarios = 0, {}
       @total_tests, @failed_tests, @failed_tests_amount = 0, {}, 0
     end
 
     def run
-      @tasks.each_pair do |task_proc, task_setup|
+      @tasks.each do |task|
+        task_name, task_opts, task_proc = task
         task_class = Class.new { include ::Spine::Task }
-        task = task_class.new *task_setup, &task_proc
-        @output.concat task.spine__output
-        @total_specs += task.spine__total_specs
-        @total_scenarios += task.spine__total_scenarios
-        @skipped_scenarios.concat task.spine__skipped_scenarios
-        @total_tests += task.spine__total_tests
-        @failed_tests.update task.spine__failed_tests
+        task_instance = task_class.new task_name, task_opts, &task_proc
+
+        @output.concat task_instance.spine__output
+
+        @skipped_tasks.update task_instance.spine__skipped_tasks
+
+        @total_specs += task_instance.spine__total_specs
+        @skipped_specs.update task_instance.spine__skipped_specs
+
+        @total_scenarios += task_instance.spine__total_scenarios
+        @skipped_scenarios.update task_instance.spine__skipped_scenarios
+
+        @total_tests += task_instance.spine__total_tests
+        @failed_tests.update task_instance.spine__failed_tests
       end
       self
     end
@@ -35,24 +44,38 @@ module Spine
       stdout
     end
 
+    def skipped_tasks
+      reset_stdout
+      return stdout unless @skipped_tasks.size > 0
+      nl; stdout "--- Skipped Tasks ---", 0, :alert
+      @skipped_tasks.each_value do |t|
+        nl
+        stdout '%s at %s' % [t[:name], proc_source(t[:proc])]
+      end
+      stdout
+    end
+
     def skipped_specs
       reset_stdout
       return stdout unless @skipped_specs.size > 0
-      nl; stdout "--- Skipped Specs ---", 0, :a
-      @skipped_specs.each { |tl| nl; stdout [' - ', tl].join, 0, :cyan }
+      nl; stdout "--- Skipped Specs ---", 0, :alert
+      @skipped_specs.each_value do |s|
+        nl
+        stdout s[:task]
+        stdout '%s at %s' % [s[:name], proc_source(s[:proc])], 1
+      end
       stdout
     end
 
     def skipped_scenarios
       reset_stdout
       return stdout unless @skipped_scenarios.size > 0
-      nl; stdout "--- Skipped Scenarios ---", 0, :a
-      @skipped_scenarios.each do |scenario|
-        label, proc, spec, ident = scenario.values_at :label, :proc, :spec, :nesting_level
+      nl; stdout "--- Skipped Scenarios ---", 0, :alert
+      @skipped_scenarios.each_value do |s|
         nl
-        stdout spec
-        stdout label, ident
-        stdout 'at %s' % proc_source(proc), ident, :w
+        stdout s[:task]
+        stdout s[:spec], 1
+        stdout '%s at %s' % [s[:name], proc_source(s[:proc])], s[:ident] - 1
       end
       stdout
     end
@@ -107,6 +130,7 @@ module Spine
     def summary
       reset_stdout
       nl; stdout '---'
+      stdout 'Tasks:       %s%s' % [@tasks.size, @skipped_tasks.size > 0 ? ' (%s skipped)' % @skipped_tasks.size : '']
       stdout 'Specs:       %s%s' % [@total_specs, @skipped_specs.size > 0 ? ' (%s skipped)' % @skipped_specs.size : '']
       stdout 'Scenarios:   %s%s' % [@total_scenarios, @skipped_scenarios.size > 0 ? ' (%s skipped)' % @skipped_scenarios.size : '']
       stdout 'Tests:       %s%s' % [
@@ -117,7 +141,7 @@ module Spine
     end
 
     def to_s
-      (output + skipped_specs + skipped_scenarios + failed_tests + summary).join("\n")
+      (output + skipped_tasks + skipped_specs + skipped_scenarios + failed_tests + summary).join("\n")
     end
 
     private

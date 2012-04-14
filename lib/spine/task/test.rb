@@ -29,9 +29,9 @@ module Spine
 
     def spine__failed_tests test = nil, error = nil
       @__spine__vars_pool__.failed_tests[spine__context.dup] = [
-          (spine__current_task || {})[:label],
-          (spine__current_spec || {})[:label],
-          (spine__current_scenario || {})[:label],
+          (spine__current_task || {})[:name],
+          (spine__current_spec || {})[:name],
+          (spine__current_scenario || {})[:name],
           test,
           error,
           spine__nesting_level
