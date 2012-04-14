@@ -106,7 +106,7 @@ end
 Spine.run
 
 # run tasks starting with "test"
-Spine.run /test/
+Spine.run /^test/
 
 # run only "test_integers" task
 Spine.run :test_integers
