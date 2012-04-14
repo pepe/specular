@@ -38,7 +38,6 @@ module Spine
       else
         spine__output ''
         spine__output name
-        spine__nesting_level :+
       end
 
       self.instance_exec &proc

@@ -76,9 +76,11 @@ Tasks
 ---
 
 Spine tasks can be defined anywhere in your code and executed anywhere too,
-by calling `Spine.run('task name')`, or just `Spine.run` to execute all defined tasks.
+by calling `Spine.run('task name')`,<br/>
+or just `Spine.run` to execute all defined tasks.
 
-#### Defining tasks:
+```ruby
+    # Defining tasks:
 
     class TestedClass
 
@@ -97,7 +99,7 @@ by calling `Spine.run('task name')`, or just `Spine.run` to execute all defined 
         end
     end
 
-#### Running tasks:
+    # Running tasks:
 
     # run all tasks
     Spine.run
@@ -107,6 +109,7 @@ by calling `Spine.run('task name')`, or just `Spine.run` to execute all defined 
 
     # run only "test_integers" task
     Spine.run :test_integers
+```
 
 To skip a task, set :skip option to true:
 
@@ -117,39 +120,26 @@ To skip a task, set :skip option to true:
 Specs
 ---
 
-Each action can have multiple specs.
-First argument is required and should contain spec name/description.
-Consequent arguments are optional and may contain the action name or options hash.
+First argument is required and should contain spec name/description.<br/>
+Second argument are optional and may contain a hash of options.
 
-    # action
-    def details
-      # some logic
+```ruby
+    Spine.task do
+
+        spec 'Testing links' do
+          # some logic
+        end
+
+        spec 'Testing banners' do
+          # some logic
+        end
     end
+```
 
-    ctrl.spec 'Testing links', :details do
-      # some logic
-    end
+To skip an spec, set :skip option to true:
 
-    ctrl.spec 'Testing banners', :details do
-      # some logic
-    end
-
-To skip an spec, provide :skip option:
-
-    ctrl.spec 'Skipping for now', skip: true do
-      # code here will not be executed
-    end
-
-If second argument given, it is treated as action and browsers inside spec will make requests to given action:
-
-    ctrl.spec 'Testing CRUD - edit', :edit do
-      get 100 # will request /edit/100
-    end
-
-If no action given, browsers will make requests to :index action:
-
-    ctrl.spec 'OverallTesting' do
-      get # will request /index
+    spec 'Skipping for now', skip: true do
+      # tests here will not be executed
     end
 
 Scenarios
@@ -157,22 +147,27 @@ Scenarios
 
 Scenarios are optional, however they are very useful when we need to split the spec into logical parts.
 
-    ctrl.spec 'Testing theory of relativity' do
+```ruby
+    Spine.task do
 
-      Suppose "I'm Superman" do
-        And "I can fly" do
-          But "I can not pry" do
-            When "I'm landing" do
-              is("it real to keep my ass?").kind_of? Random
+        spec 'Testing theory of relativity' do
+
+          Suppose "I'm Superman" do
+            And "I can fly" do
+              But "I can not pry" do
+                When "I'm landing" do
+                  is("it real to keep my ass?").kind_of? Random
+                end
+              end
             end
           end
         end
-      end
     end
+```
 
 Scenarios uses capitalized names and should have a name/description passed as first argument.
 
-As per specs, consequent arguments are optional and may contain the action name or options hash.
+As per specs, consequent arguments are optional and may contain a hash of options.
 
 Supported scenarios:
 
@@ -186,65 +181,32 @@ Supported scenarios:
 *    `Assume`
 *    `Suppose`
 *    `And`
+*    `Nor`
 *    `But`
 *    `Should`
 
 Something missing? Please advise.
 
-To skip a scenario, pass :skip option:
+To skip a scenario, set :skip option to true:
 
-    ctrl.spec 'SomeSpec' do
-
-      Given 'user clicked register', skip: true do
-      end
-    end
-
-I action name given as first argument, browsers inside scenario will make requests to given action.
-
-    ctrl.spec 'Buying Workflow', :buy do
-
-      get 'Coolest-Product-Ever' # сделает запрос по адресу /buy/Coolest-Product-Ever
-
-      # custom action for scenarios
-      Suppose 'user choose to create a new account', :register do
-        visit # will request /register
-      end
-
-    end
-
-If no action given, browsers inside scenario will make requests to action inherited from spec or from parent scenario:
-
-    ctrl.spec 'Buying Workflow', :buy do
-
-      get 'Coolest-Product-Ever' # сделает запрос по адресу /buy/Coolest-Product-Ever
-
-      # custom action for scenarios
-      Suppose 'user choose to create a new account', :register do
-
-        visit # will request /register
-
-        When 'user click "Personal Account"' do
-          visit 'personal-account' # сделает запрос по адресу /register/personal-account
-        end
-
-      end
-
-      # this scenario using action set by spec
-      If 'user has a coupon' do
-        visit 'i-have-a-coupon' # сделает запрос по адресу /buy/i-have-a-coupon
-      end
-
-    end
+```ruby
+  Given 'user clicked register', skip: true do
+    # tests here will not be executed
+  end
+```
 
 Tests
 ---
 
-For tests declaration, PrestoTest uses a single rule - "The Rule of Two Brackets".<br/>
-This is the only rule you'll have to remember, cause anything after brackets is done in pure Ruby, without hacking objects.
+For tests declaration, Spine uses a single rule - "The Rule of Two Brackets".<br/>
+This is the only rule you'll have to remember, cause anything after brackets is done in pure Ruby,<br/>
+without "wise" tricks and hacks.
 
-The logic is extremely simple - tested object should be placed inside 2 brackets.<br/>
-Let's say foo is tested object and bar is expected value.<br/>
-According to rule of two brackets the test will look like this:
+No code is wiser than no code.
+
+The logic is extremely simple - tested object should be placed inside 2 brackets, round or curly.<br/>
+Let's suppose `foo` is tested object and `bar` is expected value.<br/>
+According to rule of two brackets, the test will look like this:
 
     is(foo) == bar
 
@@ -260,97 +222,16 @@ Let's play a bit...
     does?(foo).respond_to? bar
     # etc
 
-Looks nice, really nice.<br/>
-The main virtue - objects kept in pristine state!<br/>
+Looks nice?<br/>
+The main virtue - objects are kept pristine!<br/>
 And yes, it looks naturally.
 
 Here is a live example:
 
 app.rb
 
-    require 'presto'
     require 'spine'
 
-    class App
-      include Presto::Api
-      http.map
-
-      ctrl.spec 'BasicTests' do
-
-        def smells_like_a_pizza? obj
-          obj.to_s =~ /#{Regexp.union 'pizza', 'olives', 'cheese'}/i
-        end
-
-        def contain_cheese? obj
-          obj.to_s =~ /cheese/i
-        end
-
-        Should 'pass' do
-
-          foo, bar = 1, 1
-          is(foo) == bar
-          refute(foo) > bar
-
-          foo, bar = 1, 2
-          false?(foo) == bar
-          is?(foo) <= bar
-
-          foo, bar = 'foo'.freeze, 'bar'
-          is(foo).frozen?
-          refute(bar).frozen?
-
-          foo = "Hi, I'm Duck the Greatest! Quack! Quack!"
-          does(foo).looks_like_a_duck?
-          does(foo).quacks?
-
-          bar = "I'm a pizza with olives and lot of cheese!'"
-          does(bar).smells_like_a_pizza?
-          does(bar).contain_cheese?
-
-          foo = 1
-          bar = [foo, 2, 3]
-          is(bar.size) == 3
-          does(bar).respond_to? :include?
-          does(bar).include? foo
-
-          does { throw :some, :test }.throw_symbol? :some, :test
-          expect { something risky }.to_raise NoMethodError
-
-        end
-
-        Should 'fail' do
-          foo, bar = 'some string', :some_symbol
-          expect(foo) == bar
-        end
-
-        Should 'fail' do
-          is('foo').martian?
-        end
-
-        Should 'fail' do
-          does { 1+1 }.throw_symbol?
-        end
-
-        Should 'fail' do
-          refute { something risky }.raise_error NoMethodError
-        end
-
-      end
-
-      private
-
-      def looks_like_a_duck? obj
-        obj.to_s =~ /duck/i
-      end
-
-      def quacks? obj
-        obj.to_s =~ /quack/i
-      end
-
-    end
-    app = Presto::App.new
-    app.specs.run
-    puts app.specs.to_s
 
 Running in terminal:
 

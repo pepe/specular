@@ -91,9 +91,10 @@ module Spine
 
         task, spec, scenario, test, error, ident = setup
 
+        nl
         stdout task
         stdout spec, 1
-        stdout scenario, ident - 1
+        stdout scenario, ident
         stdout [Colorize.alert(test), error[:source]].join(' at '), ident
 
         if (exception = error[:exception]).is_a?(Exception)

@@ -14,6 +14,7 @@ module Spine
       name = [prefix, goal].join(' ')
 
       spine__total_scenarios :+
+      spine__nesting_level :+
 
       prev_scenario = spine__current_scenario
       spine__current_scenario name: name,
@@ -22,7 +23,6 @@ module Spine
                               spec: (spine__current_spec||{})[:name],
                               ident: spine__nesting_level
 
-      spine__nesting_level :+
       spine__context << proc
 
       spine__scenario_skipped if opts[:skip]
@@ -34,6 +34,8 @@ module Spine
       spine__nesting_level :-
 
       spine__current_scenario prev_scenario
+
+      spine__output('') unless spine__context_skipped?
     end
 
     def spine__current_scenario *args
