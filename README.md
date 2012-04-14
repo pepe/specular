@@ -80,42 +80,44 @@ by calling `Spine.run('task name')`,<br/>
 or just `Spine.run` to execute all defined tasks.
 
 ```ruby
-    # Defining tasks:
+# Defining tasks:
 
-    class TestedClass
+class TestedClass
 
-        # define your methods
+    # define your methods
 
-        Spine.task :test_integers do
-            # test your methods
-        end
-
-        Spine.task :test_strings do
-            # test your methods
-        end
-
-        Spine.task :yet_another_task do
-            # test your methods
-        end
+    Spine.task :test_integers do
+        # test your methods
     end
 
-    # Running tasks:
+    Spine.task :test_strings do
+        # test your methods
+    end
 
-    # run all tasks
-    Spine.run
+    Spine.task :yet_another_task do
+        # test your methods
+    end
+end
 
-    # run tasks starting with "test"
-    Spine.run /test/
+# Running tasks:
 
-    # run only "test_integers" task
-    Spine.run :test_integers
+# run all tasks
+Spine.run
+
+# run tasks starting with "test"
+Spine.run /test/
+
+# run only "test_integers" task
+Spine.run :test_integers
 ```
 
 To skip a task, set :skip option to true:
 
-    Spine.task :some_task, skip: true do
-        # some logic
-    end
+```ruby
+Spine.task :some_task, skip: true do
+    # tests here will not be executed
+end
+```
 
 Specs
 ---
@@ -124,23 +126,25 @@ First argument is required and should contain spec name/description.<br/>
 Second argument are optional and may contain a hash of options.
 
 ```ruby
-    Spine.task do
+Spine.task do
 
-        spec 'Testing links' do
-          # some logic
-        end
-
-        spec 'Testing banners' do
-          # some logic
-        end
+    spec 'Testing links' do
+      # some logic
     end
+
+    spec 'Testing banners' do
+      # some logic
+    end
+end
 ```
 
 To skip an spec, set :skip option to true:
 
-    spec 'Skipping for now', skip: true do
-      # tests here will not be executed
-    end
+```ruby
+spec 'Skipping for now', skip: true do
+  # tests here will not be executed
+end
+```
 
 Scenarios
 ---
@@ -148,21 +152,21 @@ Scenarios
 Scenarios are optional, however they are very useful when we need to split the spec into logical parts.
 
 ```ruby
-    Spine.task do
+Spine.task do
 
-        spec 'Testing theory of relativity' do
+    spec 'Testing theory of relativity' do
 
-          Suppose "I'm Superman" do
-            And "I can fly" do
-              But "I can not pry" do
-                When "I'm landing" do
-                  is("it real to keep my ass?").kind_of? Random
-                end
-              end
+      Suppose "I'm Superman" do
+        And "I can fly" do
+          But "I can not pry" do
+            When "I'm landing" do
+              is("it real to keep my ass?").kind_of? Random
             end
           end
         end
+      end
     end
+end
 ```
 
 Scenarios uses capitalized names and should have a name/description passed as first argument.
@@ -190,9 +194,9 @@ Something missing? Please advise.
 To skip a scenario, set :skip option to true:
 
 ```ruby
-  Given 'user clicked register', skip: true do
+Given 'user clicked register', skip: true do
     # tests here will not be executed
-  end
+end
 ```
 
 Tests
@@ -230,14 +234,94 @@ Here is a live example:
 
 app.rb
 
-    require 'spine'
+```ruby
+require 'spine'
 
+class SomeClass
+
+  module TestingHelper
+    def looks_like_a_duck? obj
+      obj.to_s =~ /duck/i
+    end
+
+    def quacks? obj
+      obj.to_s =~ /quack/i
+    end
+  end
+
+  Spine.task 'SomeTask' do
+    spec 'BasicTests' do
+
+      include TestingHelper
+
+      def smells_like_a_pizza? obj
+        obj.to_s =~ /#{Regexp.union 'pizza', 'olives', 'cheese'}/i
+      end
+
+      def contain? food, ingredient
+        food =~ /#{ingredient}/
+      end
+
+      Should 'pass' do
+
+        foo, bar = 1, 1
+        is(foo) == bar
+        refute(foo) > bar
+
+        foo, bar = 1, 2
+        false?(foo) == bar
+        is?(foo) <= bar
+
+        foo, bar = 'foo'.freeze, 'bar'
+        is(foo).frozen?
+        refute(bar).frozen?
+
+        foo = "Hi, I'm Duck the Greatest! Quack! Quack!"
+        does(foo).looks_like_a_duck?
+        does(foo).quacks?
+
+        pizza = "I'm a pizza with olives and lot of cheese!'"
+        does(pizza).smells_like_a_pizza?
+        does(pizza).contain? 'olives'
+        does(pizza).contain? 'cheese'
+
+        foo = 1
+        bar = [foo, 2, 3]
+        is(bar.size) == 3
+        does(bar).respond_to? :include?
+        does(bar).include? foo
+
+        does { throw :some, :test }.throw_symbol? :some, :test
+        expect { something risky }.to_raise_error
+
+      end
+
+      Should 'fail' do
+        foo, bar = 'some string', :some_symbol
+        expect(foo) == bar
+        is(1) == 1
+      end
+
+      Should 'fail' do
+        does { 1+1 }.throw_symbol?
+      end
+
+      Should 'fail' do
+        refute { something risky }.raise_error
+      end
+
+    end
+  end
+end
+
+puts Spine.run
+```
 
 Running in terminal:
 
     ruby app.rb
 
-<img src="http://prestorb.org/spine/basic-tests.png" alt="image"/>
+<img src="http://prestorb.org/spine/example-long.png">
 <hr/>
 
 Aliases:
@@ -262,36 +346,44 @@ Works only with blocks.
 
 If called without args, framework expecting the block will raise an error of any type:
 
-    expect{ some bad code here }.to_raise_error
-    # - passed
+```ruby
+expect{ some bad code here }.to_raise_error
+# - passed
 
-    expect{ 'some bad code here' }.to_raise_error
-    # - failed
+expect{ 'some bad code here' }.to_raise_error
+# - failed
+```
 
 If called with a single arg and the arg is a Class, framework expecting the block will raise an error of given class:
 
-    does{ some bad code here }.raise? NoMethodError
-    # - passed
-    does{ some bad code here }.raise? SomeCustomError
-    # - failed
+```ruby
+does{ some bad code here }.raise? NoMethodError
+# - passed
+does{ some bad code here }.raise? SomeCustomError
+# - failed
+```
 
 If called with a single arg and the arg is a string or regex, framework expecting the block will raise an error containing given text:
 
-    does{ some bad code here }.raise? /bad code/
-    # - passed
-    does{ some bad code here }.raise? 'bad code'
-    # - passed
-    does{ some bad code here }.raise? 'blah'
-    # - failed
+```ruby
+does{ some bad code here }.raise? /bad code/
+# - passed
+does{ some bad code here }.raise? 'bad code'
+# - passed
+does{ some bad code here }.raise? 'blah'
+# - failed
+```
 
 If called with two args, a class and a string/regex, framework expecting the block will raise an error of Class type and also containing given text:
 
-    does{ some bad code here }.raise? NoMethodError, /bad code/
-    # - passed
-    does{ some bad code here }.raise? SomeCustomError, /bad code/
-    # - failed
-    does{ some bad code here }.raise? NoMethodError, 'blah'
-    # - failed
+```ruby
+does{ some bad code here }.raise? NoMethodError, /bad code/
+# - passed
+does{ some bad code here }.raise? SomeCustomError, /bad code/
+# - failed
+does{ some bad code here }.raise? NoMethodError, 'blah'
+# - failed
+```
 
 Aliases:
 
@@ -306,24 +398,30 @@ Works only with symbols.
 
 If called without args, framework expecting the block will throw any symbol:
 
-    expect{ throw :back_to_future }.throw_symbol
-    # - passed
-    expect{ throw :anywhere }.throw_symbol
-    # - passed
+```ruby
+expect{ throw :back_to_future }.throw_symbol
+# - passed
+expect{ throw :anywhere }.throw_symbol
+# - passed
+```
 
 If 1st arg given, framework expecting the block will throw the given symbol:
 
-    does{ throw :begining_of_times }.throw_symbol? :begining_of_times
-    # - passed
-    does{ throw :begining_of_times }.throw_symbol? :far_far_away
-    # - failed
+```ruby
+does{ throw :begining_of_times }.throw_symbol? :begining_of_times
+# - passed
+does{ throw :begining_of_times }.throw_symbol? :far_far_away
+# - failed
+```
 
 If 2nd arg is also given, framework expecting the block will throw the given symbol and also will pass the given value:
 
-    does{ throw :begining_of_times, 'N bc' }.throw_symbol? :begining_of_times, 'N bc'
-    # - passed
-    does{ throw :begining_of_times, 'N bc' }.throw_symbol? :begining_of_times, 'today'
-    # - failed
+```ruby
+does{ throw :begining_of_times, 'N bc' }.throw_symbol? :begining_of_times, 'N bc'
+# - passed
+does{ throw :begining_of_times, 'N bc' }.throw_symbol? :begining_of_times, 'today'
+# - failed
+```
 
 Aliases:
 
@@ -336,232 +434,56 @@ Aliases:
 Custom Helpers
 ---
 
-Helpers can be defined inside specs and/or inside controllers.
+As simple as `include ModuleName`
 
-Helpers defined inside controllers are available for all specs.
-It is recommended to put them in private zone so they would not be accessible from web.
-
-Helpers defined inside spec will be available only inside that spec.
-
-    ctrl.spec "SomeSpec" do
-      def looks_like_jack? obj
-        obj =~ /jack/
-      end
-
-      does('Jack Daniels').looks_like_jack?
-      # - passed
-      does('Captain Jack').looks_like_jack?
-      # - passed
-      does('Britney Spears').looks_like_jack?
-      # - failed
+```ruby
+module SomeHelper
+    def between? val, min, max
+        (min..max).include? val
     end
+end
+Spine.task do
 
+    include SomeModule
 
-Browsers
----
+    is(10).between? 0, 100
+    # - passed
 
-If a spec/scenario are tied to some action(through second argument),
-browsers inside them will make requests to that action.<br/>
-Otherwise they will make requests to :index action.
+    is(10).between? 1, 5
+    # - failed
 
-    class Members
-      include Presto::Api
-      http.map :members
-
-      def login
-        # some logic
-      end
-
-      ctrl.spec "Testing Login", :login do
-
-        get # will request /members/login
-      end
-    end
-
-Action arguments can be passed by browser without specifying action name:
-
-    def edit id
-
-    end
-
-    ctrl.spec 'Testing CRUD / edit', :edit do
-
-      get 10 # will request /edit/10
-    end
-
-    def menu position
-    end
-
-    ctrl.spec 'Testing Menus', :menu do
-
-      get 'top' # will request /menu/top
-    end
-
-HTTP params also can be passed via browser as a hash:
-
-    def menu position
-    end
-
-    ctrl.spec 'Testing Menus', :menu do
-
-      get 'top', :color => 'red' # will request /menu/top?color=red
-    end
-
-**However!**, if first browser argument is a symbol, it is treated as action name and browser will request given action:
-
-    def menu position
-    end
-    def banners position
-    end
-
-    ctrl.spec 'Testing Menus', :menu do
-
-      get 'top'            # will request /menu/top
-      get :banners, 'top'  # will request /banners/top
-    end
-
-**Even Better!**, if first browser argument is a controller, browser will request actions inside given controller.<br/>
-Please note that in this case the second argument should be the action name and consequent args should be the action params and HTTP params(if any).
-
-    class Index
-      include Presto::Api
-      http.map :cms
-
-      def menu scope = nil
-      end
-    end
-    class Forum
-      include Presto::Api
-      http.map :forum
-
-      def index
-      end
-
-      ctrl.spec 'Top menu' do
-        get Index, :menu, :forum # will request /cms/menu/forum
-      end
-    end
-
-This will help to keep tests working even if controllers changes their URL.<br/>
-In the example above, if Index will change URL from /cms to say /pages, tests will continue to work without any modifications.
-
-Rack::Test browser
----
-
-### Standard Requests - get, post, put, delete, options, head
-
-    response = get
-    # response.body will contain data returned by action
-    # response.headers will contain headers
-
-Also you can access response data by `browser`
-
-        get
-        # browser.last_response.body will contain data returned by action
-        # browser.last_response.headers will will contain headers
-
-Same for `post`
-
-If you need methods from Rack::Test::Methods also use `browser` method.
-
-    response = get
-    browser.last_response.follow_redirect!
-
-    browser.header "User-Agent", "Firefox"
-
-    browser.set_cookie
-    browser.clear_cookies
-
-    # etc
-
-This is done to be able to use more browsers at same time.
-
-### Ajax Requests
-
-Same as standard ones, just add xhr_ prefix
-
-    xhr_get
-    xhr_post
-
-Output can be accessed as per standard requests.
-
-### JSON Requests
-
-If some action returns JSON, you do need to parse it manually - PrestoTest will do it automatically.<br/>
-On JSON requests, `response` will get a new method - `json` obviously :),
-so you'll can access JSON object via `response.json`:
-
-    def create
-      # some logic
-      {status: 1, message: 'success'}.to_json
-    end
-
-    ctrl.spec 'Creating items', :create do
-
-      response = get_json
-      # response.body: '{"status":1,"message":"success"}' [String]
-      # response.json: {"status"=>1, "message"=>"success"} [Hash]
-    end
-
-I you need to access an JSON action via Ajax, simply add xhr_ prefix:
-
-    xhr_get_json
-    xhr_post_json
-
-Authorization
----
-
-If some action requires authorization, use `authorize` before request:
-
-    authorize 'admin', 'reallySecretPassword'
-    get
-
-If some action requires digest authorization, use `digest_authorize` before request:
-
-    digest_authorize 'admin', 'reallySecretPassword'
-    get
-
-To reset the authorization, use `reset!` or `reset_session!`:
-
-    authorize 'admin', 'reallySecretPassword'
-    get # will use authorization
-
-    reset!
-    get # will NOT use authorization
-
-Capybara browser
----
-
-Capybara is an optional browser, thus it is not installed as a dependency.<br/>
-So, before use, you'll have to install configure it.
-
-To use it on all specs, enable it globally by passing :capybara option to #run method:
-
-    app = Presto::App.new
-    app.specs.run :capybara => true
-    puts app.specs.to_s
-
-To use it only on some spec, pass it as option only for that spec:
-
-    ctrl.spec 'SomeSpec', :some_action, :capybara => true do
-      # some logic
-    end
-
-All about automated addressing is of course valid for `visit` method too:
-
-    ctrl.spec 'SomeSpec', :some_action, :capybara => true do
-      visit                        # will request /some_action
-      visit 100                    # will request /some_action/100
-      visit 100, :color => 'red'   # will request /some_action/100?color=red
-    end
-        </source>
+end
+```
 
 Hooks
 ---
 
-before/after - executing code before/after each test.
+`before` / `after` - executing code before/after each test.
 
-    ctrl.spec 'SomeSpec' do
+Hooks defined at task level will be executed by all tests inside task:
+
+```ruby
+Spine.task do
+
+  before do
+    @page = Model::Page.new
+  end
+
+  after do
+    @page.destroy
+  end
+
+  # any test inside any spec/scenario will execute this hooks
+end
+```
+
+Hooks declared inside spec will run for all tests inside spec:
+
+```ruby
+Spine.task do
+
+    spec 'SomeSpec' do
+
       before do
         @page = Model::Page.new
       end
@@ -569,55 +491,31 @@ before/after - executing code before/after each test.
       after do
         @page.destroy
       end
+
+      # this hooks will be executed only by test inside current spec and ignored on other specs.
     end
+end
+```
 
-Hooks declared by spec will run for all tests on all scenarios inside spec.<br/>
-And of course scenarios may have own hooks, which will be executed after spec hooks:
+And of course scenarios may have hooks as well, which will be executed only inside given scenario:
+
+```ruby
+
+Spine.task do
 
     ctrl.spec 'SomeSpec' do
-
-      before do
-        @page = Model::Page.new
-      end
-
-      after do
-        @page.destroy
-      end
 
       Should 'run a hook that will modify @page state' do
+
         before do
           @page.status = 1
         end
+
+        # this will be executed only inside current scenario
       end
     end
-
-So, spec hooks are inherited by all scenarios.<br/>
-However, scenario hooks are strictly personal and not inherited in any way, even by scenario children:
-
-    ctrl.spec 'SomeSpec' do
-
-      before do
-        @page = Model::Page.new
-      end
-
-      after do
-        @page.destroy
-      end
-
-      Should 'run a hook that will modify @page state' do
-
-        before do
-          @page.status = 1
-        end
-        # here tests will run top level hooks + scenario hooks
-
-        Should 'run only spec hooks' do
-          # here tests will run only top level hooks
-        end
-
-      end
-    end
-        </source>
+end
+```
 
 Last test status
 ---
@@ -625,169 +523,127 @@ Last test status
 *   `passed?` - returns true if last test passed
 *   `failed?` - returns true if last test failed
 
-Example:
+```ruby
+is(1) == 1
+passed? # true
+failed? # false
 
-    ctrl.spec 'SomeSpec' do
-
-      is(1) == 1
-      passed? # true
-      failed? # false
-
-      is(1) == 0
-      passed? # false
-      failed? # true
-    end
+is(1) == 0
+passed? # false
+failed? # true
+```
 
 Output
 ---
 
-`output` method allow to print additional info during testing process.<br/>
-`puts` & co. will print info somewhere too, however `output` will print the info in right place and optionally colorized.
+`o` method allow to print additional info during testing process.<br/>
+`puts` & co. will print info somewhere on the fields too, however `o` will print the info in right place and optionally colorized.
 
-    ctrl.spec 'Creating new account', :register do
+```ruby
+spec 'Creating new account' do
 
-      data = {name: rand, email: rand}
-      output 'sending request ...'
+  data = {name: rand, email: rand}
+  o 'sending request ...'
 
-      result = post data
-      is?(result.body) == 'success'
+  result = post data
+  is?(result.body) == 'success'
 
-      if passed?
-        output 'account created!', :green
-      end
-    end
+  if passed?
+    o.success 'account created!'
+  end
 
-Available colors:
+  if failed?
+    o.error 'was unable to create account. sent data:'
+    o data.to_s
+  end
+end
+```
 
-*    red
-*    green
-*    yellow
-*    blue
-*    magenta
-*    cyan
-*    white
-
-Errors
----
-
-`error` allow to add additional details to error generated by last failed test.
-
-    ctrl.spec 'Creating new account', :register do
-
-      data = {name: rand, email: rand}
-      result = post data
-      is?(result.body) == 'success'
-      if failed?
-        error 'data provided: %s' % data
-        error 'even more details'
-        error 'and maybe some debugging'
-        error 'etc...'
-      end
-      # will display standard error + manually added details
 
 Deploy
 ---
 
 First of all you have to install `spine`
 
-    gem install spine
+    $ gem install spine
 
 Then simply require it in your application:
 
-    require 'presto'
-    require 'spine'
+```ruby
 
-    class App
-      include Presto::Api
-      http.map
+require 'spine'
 
-      def index
+class App
+
+  Spine.task do
+      spec 'SomeSpec' do
         # some logic
       end
+  end
+end
 
-      ctrl.spec 'SomeSpec' do
+puts Spine.run
+```
+
+You can also run tasks separately:
+
+```ruby
+class News
+    Spine.task News do
         # some logic
-      end
     end
+end
 
-    # testing app
-    app = Presto::App.new
-    app.specs.run
-    if app.specs.passed?
-      app.run
-    else
-      puts app.specs.to_s
-    end
+module Forum
 
-You can also test controllers/slices separately:
-
-    class News
-      include Presto::Api
-      http.map :news
-
-      ctrl.spec 'SomeSpec' do
-        # some logic
-      end
-    end
-
-    module Forum
-
-      class Members
-        include Presto::Api
-        http.map :members
-
-        ctrl.spec 'SomeSpec' do
-          # some logic
+    class Members
+        Spine.task Forum::Members do
+            # some logic
         end
-      end
-
-      class Posts
-        include Presto::Api
-        http.map :posts
-
-        ctrl.spec 'SomeSpec' do
-          # some logic
-        end
-      end
     end
 
-    # testing News Controller
-    news_specs = Presto::App.mount(News).specs
-    news_specs.run
-    puts news_specs.to_s
+    class Posts
+        Spine.task Forum::Posts do
+            # some logic
+        end
+    end
+end
 
-    # testing Forum Slice
-    forum_specs = Presto::App.mount(Forum).specs
-    forum_specs.run
-    puts forum_specs.to_s
+# testing News Controller
+puts Spine.run News
 
-Results can be printed separately too:
+# testing Forum Members
+puts Spine.run Forum::Members
+
+# testing Forum Posts
+puts Spine.run Forum::Posts
+```
+
+Results can also be printed separately:
 
 *    `passed?` - returns true if all tests passed
 *    `output` - details about testing process
+*    `skipped_tasks`
 *    `skipped_specs`
 *    `skipped_scenarios`
 *    `failed_tests`
 *    `summary`
 
-Example:
+```ruby
+specs = Spine.run
 
-    app = Presto::App.new
-    specs = app.specs
+if specs.passed?
+  puts specs.summary
+else
+  puts specs.output
+  puts specs.failed_tests
+end
 
-    specs.run
+if specs.skipped_specs.size > 0
+  puts specs.skipped_specs
+end
 
-    if specs.passed?
-      puts specs.summary.to_s
-    else
-      puts specs.output.to_s
-      puts specs.failed_tests.to_s
-    end
-
-    if specs.skipped_specs.size > 0
-      puts specs.skipped_specs.to_s
-    end
-
-    if specs.skipped_scenarios.size > 0
-      puts specs.skipped_scenarios.to_s
-    end
+if specs.skipped_scenarios.size > 0
+  puts specs.skipped_scenarios
+end
+```
