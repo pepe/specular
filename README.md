@@ -17,13 +17,15 @@ Robert Martin
 
 Tested objects should always be placed inside brackets(round or curly ones).
 
-    is(foo) == bar
-    is(foo).eql? bar
-    is(foo) > bar
-    does(foo).include? bar
-    are(foo).instance_of? bar
-    does { foo.is_doing_something_risky }.raise_error?
-    expect { foo.bar }.to_throw_symbol
+```ruby
+is(foo) == bar
+is(foo).eql? bar
+is(foo) > bar
+does(foo).include? bar
+are(foo).instance_of? bar
+does { foo.is_doing_something_risky }.raise_error?
+expect { foo.bar }.to_throw_symbol
+```
 
 Anything is done in natural, easy and rememberable way, without any object to be hacked.
 
