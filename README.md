@@ -150,7 +150,7 @@ end
 Scenarios
 ---
 
-Scenarios are optional, however they are very useful when we need to split the spec into logical parts.
+Scenarios are optional, however they are very useful when we need to split a spec into logical parts.
 
 ```ruby
 Spine.task do
