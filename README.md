@@ -478,7 +478,7 @@ Spine.task do
 end
 ```
 
-Hooks declared inside spec will run for all tests inside spec:
+Hooks declared inside spec will run only for tests inside given spec:
 
 ```ruby
 Spine.task do
@@ -493,18 +493,18 @@ Spine.task do
         @page.destroy
       end
 
-      # this hooks will be executed only by test inside current spec and ignored on other specs.
+      # this hooks will be executed only by tests inside current spec and ignored on other specs.
     end
 end
 ```
 
-And of course scenarios may have hooks as well, which will be executed only inside given scenario:
+And of course scenarios may have hooks as well, that will be executed only inside given scenario:
 
 ```ruby
 
 Spine.task do
 
-    ctrl.spec 'SomeSpec' do
+    spec 'SomeSpec' do
 
       Should 'run a hook that will modify @page state' do
 
@@ -554,8 +554,8 @@ spec 'Creating new account' do
   end
 
   if failed?
-    o.error 'was unable to create account. sent data:'
-    o data.to_s
+    o.error 'was unable to create account'
+    o 'sent data: %s' % data.to_s
   end
 end
 ```
@@ -568,7 +568,7 @@ First of all you have to install `spine`
 
     $ gem install spine
 
-Then simply require it in your application:
+Then simply require it in your application and run defined tasks:
 
 ```ruby
 
