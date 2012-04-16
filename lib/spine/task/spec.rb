@@ -1,7 +1,7 @@
 module Spine
   module Task
 
-    def spec name, opts = {}, &proc
+    def Spec name, opts = {}, &proc
 
       raise('--- specs can not be defined inside specs ---') if spine__current_spec
       raise('--- specs can not be defined inside scenarios ---') if spine__current_scenario

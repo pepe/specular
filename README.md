@@ -129,11 +129,11 @@ Second argument are optional and may contain a hash of options.
 ```ruby
 Spine.task do
 
-    spec 'Testing links' do
+    Spec 'Testing links' do
       # some logic
     end
 
-    spec 'Testing banners' do
+    Spec 'Testing banners' do
       # some logic
     end
 end
@@ -142,7 +142,7 @@ end
 To skip an spec, set :skip option to true:
 
 ```ruby
-spec 'Skipping for now', skip: true do
+Spec 'Skipping for now', skip: true do
   # tests here will not be executed
 end
 ```
@@ -155,7 +155,7 @@ Scenarios are optional, however they are very useful when we need to split a spe
 ```ruby
 Spine.task do
 
-    spec 'Testing theory of relativity' do
+    Spec 'Testing theory of relativity' do
 
       Suppose "I'm Superman" do
         And "I can fly" do
@@ -188,6 +188,7 @@ Supported scenarios:
 *    `And`
 *    `Nor`
 *    `But`
+*    `However`
 *    `Should`
 
 Something missing? Please advise.
@@ -251,7 +252,7 @@ class SomeClass
   end
 
   Spine.task 'SomeTask' do
-    spec 'BasicTests' do
+    Spec 'BasicTests' do
 
       include TestingHelper
 
@@ -456,6 +457,25 @@ Spine.task do
 end
 ```
 
+Also helpers can be declared directly inside tasks:
+
+
+```ruby
+Spine.task do
+
+    def between? val, min, max
+        (min..max).include? val
+    end
+
+    is(10).between? 0, 100
+    # - passed
+
+    is(10).between? 1, 5
+    # - failed
+
+end
+```
+
 Hooks
 ---
 
@@ -483,7 +503,7 @@ Hooks declared inside spec will run only for tests inside given spec:
 ```ruby
 Spine.task do
 
-    spec 'SomeSpec' do
+    Spec 'SomeSpec' do
 
       before do
         @page = Model::Page.new
@@ -501,19 +521,27 @@ end
 And of course scenarios may have hooks as well, that will be executed only inside given scenario:
 
 ```ruby
-
 Spine.task do
 
-    spec 'SomeSpec' do
+    @page = Model::Page.first
 
-      Should 'run a hook that will modify @page state' do
+    Spec 'SomeSpec' do
+
+      Should 'run a hook that will modify @page status' do
 
         before do
           @page.status = 1
+          # this will be executed only inside current scenario and its children
         end
 
-        # this will be executed only inside current scenario
+        And 'this scenario will modify @page status too' do
+        end
+
       end
+
+      However 'this scenario wont modify @page status' do
+      end
+
     end
 end
 ```
@@ -541,12 +569,12 @@ Output
 `puts` & co. will print info somewhere on the fields too, however `o` will print the info in right place and optionally colorized.
 
 ```ruby
-spec 'Creating new account' do
+Spec 'Creating new account' do
 
   data = {name: rand, email: rand}
   o 'sending request ...'
 
-  result = post data
+  result = post '/', data
   is?(result.body) == 'success'
 
   if passed?
@@ -555,7 +583,7 @@ spec 'Creating new account' do
 
   if failed?
     o.error 'was unable to create account'
-    o 'sent data: %s' % data.to_s
+    o.warn 'sent data: %s' % data
   end
 end
 ```
@@ -571,13 +599,12 @@ First of all you have to install `spine`
 Then simply require it in your application and run defined tasks:
 
 ```ruby
-
 require 'spine'
 
 class App
 
   Spine.task do
-      spec 'SomeSpec' do
+      Spec 'SomeSpec' do
         # some logic
       end
   end
@@ -618,6 +645,9 @@ puts Spine.run Forum::Members
 
 # testing Forum Posts
 puts Spine.run Forum::Posts
+
+# testing all Forum classes
+puts Spine.run /^Forum/
 ```
 
 Results can also be printed separately:

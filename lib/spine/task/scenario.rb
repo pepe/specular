@@ -1,7 +1,7 @@
 module Spine
   module Task
 
-    [:Given, :When, :Then, :It, :If, :Let, :Say, :Assume, :Suppose, :And, :Nor, :But, :Should].each do |prefix|
+    [:Given, :When, :Then, :It, :If, :Let, :Say, :Assume, :Suppose, :And, :Nor, :But, :However, :Should].each do |prefix|
       define_method prefix do |*args, &proc|
         spine__scenario prefix, *args, &proc
       end
