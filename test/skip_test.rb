@@ -3,7 +3,7 @@ module SpineTest
 
     def test_task
       Spine.task :skip_test_task_I, skip: true do
-        spec 'should not be executed' do
+        Spec 'should not be executed' do
 
           is(1) == 1
 
@@ -12,7 +12,7 @@ module SpineTest
         end
       end
       Spine.task :skip_test_task_II do
-        spec 'someSpec' do
+        Spec 'someSpec' do
           Should 'be executed' do
             is(2) == 2
           end
@@ -32,14 +32,14 @@ module SpineTest
 
     def test_spec
       Spine.task __method__ do
-        spec :should_be_skipped, skip: true do
+        Spec :should_be_skipped, skip: true do
 
           is(1) == 1
 
           Should 'not be executed' do
           end
         end
-        spec 'should be executed' do
+        Spec 'should be executed' do
           is(2) == 2
         end
       end

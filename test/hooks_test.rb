@@ -19,7 +19,7 @@ module SpineTest
         is(1) == 1
         hooks == [:task] && expectations[:task] = true
 
-        spec :spec_1 do
+        Spec :spec_1 do
 
           before do
             hooks << :spec_1
@@ -72,7 +72,7 @@ module SpineTest
           end
         end
 
-        spec :spec_2 do
+        Spec :spec_2 do
           before do
             hooks << :spec_2
           end

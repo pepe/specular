@@ -1,9 +1,12 @@
 module Spine
   module Task
 
-    def initialize name = nil, opts = {}, &proc
+    def initialize *args, &proc
 
       proc || raise('--- tasks need a proc to run ---')
+
+      opts = args.last.is_a?(Hash) ? args.pop : {}
+      name = args.first
 
       output, task = [], self
       [:info, :success, :warn, :alert, :error].each do |meth|
@@ -40,7 +43,7 @@ module Spine
         spine__output name
       end
 
-      self.instance_exec &proc
+      self.instance_exec *args, &proc
     end
 
     def spine__last_error

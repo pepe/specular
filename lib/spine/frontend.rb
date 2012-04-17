@@ -14,9 +14,10 @@ module Spine
 
     def run
       @tasks.each do |task|
-        task_name, task_opts, task_proc = task
+
+        task_args, task_proc = task
         task_class = Class.new { include ::Spine::Task }
-        task_instance = task_class.new task_name, task_opts, &task_proc
+        task_instance = task_class.new *task_args, &task_proc
 
         @output.concat task_instance.spine__output
 
