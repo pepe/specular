@@ -691,9 +691,9 @@ puts Spine.run /^Forum/
 Results can also be printed separately:
 
 *    `passed?`  - returns true if all tests passed
-*    `output`   - details about testing process
 *    `failures` - details about failed tests
 *    `failed`   - failed tests amount
+*    `output`   - details about testing process
 *    `summary`
 *    `skipped_tasks`
 *    `skipped_specs`
@@ -706,7 +706,7 @@ if specs.passed?
   puts specs.summary
 else
   puts specs.output
-  puts specs.failed_tests
+  puts specs.failures
 end
 
 if specs.skipped_specs.size > 0
