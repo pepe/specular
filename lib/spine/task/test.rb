@@ -14,29 +14,29 @@ module Spine
     end
 
     def passed? *args
-      @__spine__vars_pool__.test_passed = args.first if args.size > 0
-      @__spine__vars_pool__.test_passed
+      @__spine__vars_pool__.assertion_passed = args.first if args.size > 0
+      @__spine__vars_pool__.assertion_passed
     end
 
     def failed?
       !passed?
     end
 
-    def spine__total_tests op = nil
-      @__spine__vars_pool__.total_tests += 1 if op == :+
-      @__spine__vars_pool__.total_tests
+    def spine__total_assertions op = nil
+      @__spine__vars_pool__.total_assertions += 1 if op == :+
+      @__spine__vars_pool__.total_assertions
     end
 
-    def spine__failed_tests test = nil, error = nil
-      @__spine__vars_pool__.failed_tests[spine__context.dup] = [
+    def spine__failed_assertions assertion = nil, error = nil
+      @__spine__vars_pool__.failed_assertions[spine__context.dup] = [
           (spine__current_task || {})[:name],
           (spine__current_spec || {})[:name],
           (spine__current_scenario || {})[:name],
-          test,
+          assertion,
           error,
           spine__nesting_level
-      ] if test
-      @__spine__vars_pool__.failed_tests
+      ] if assertion
+      @__spine__vars_pool__.failed_assertions
     end
 
   end

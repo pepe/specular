@@ -31,7 +31,7 @@ module Spine
           current_task: {name: name, proc: proc}, skipped_tasks: {},
           current_spec: nil, total_specs: 0, skipped_specs: {},
           current_scenario: nil, total_scenarios: 0, skipped_scenarios: {},
-          test_passed: true, total_tests: 0, failed_tests: {},
+          assertion_passed: true, total_assertions: 0, failed_assertions: {},
           hooks: {a: {}, z: {}}, browser: nil,
       }
       @__spine__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
@@ -47,7 +47,7 @@ module Spine
     end
 
     def spine__last_error
-      (spine__failed_tests.values.last || [])[4] || {}
+      (spine__failed_assertions.values.last || [])[4] || {}
     end
 
     def include mdl
@@ -98,7 +98,7 @@ module Spine
     end
 
     def spine__failures?
-      spine__failed_tests.each_key do |context|
+      spine__failed_assertions.each_key do |context|
         return true if spine__context[0, context.size] == context
       end
       nil

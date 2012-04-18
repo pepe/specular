@@ -9,7 +9,7 @@ module Spine
       @skipped_tasks = {}
       @total_specs, @skipped_specs = 0, {}
       @total_scenarios, @skipped_scenarios = 0, {}
-      @total_tests, @failed_tests, @failed_tests_amount = 0, {}, 0
+      @total_assertions, @failed_assertions, @failed_assertions_amount = 0, {}, 0
     end
 
     def run
@@ -29,14 +29,14 @@ module Spine
         @total_scenarios += task_instance.spine__total_scenarios
         @skipped_scenarios.update task_instance.spine__skipped_scenarios
 
-        @total_tests += task_instance.spine__total_tests
-        @failed_tests.update task_instance.spine__failed_tests
+        @total_assertions += task_instance.spine__total_assertions
+        @failed_assertions.update task_instance.spine__failed_assertions
       end
       self
     end
 
     def passed?
-      @failed_tests_amount == 0
+      @failed_assertions_amount == 0
     end
 
     def output
@@ -81,22 +81,22 @@ module Spine
       stdout
     end
 
-    def failed_tests
+    def failed_assertions
       reset_stdout
-      return stdout unless @failed_tests.size > 0
+      return stdout unless @failed_assertions.size > 0
       nl; stdout "--- Failed Tests ---", 0, :warn
       backtrace_alert = nil
       nl
-      @failed_tests.each_value do |setup|
-        @failed_tests_amount += 1
+      @failed_assertions.each_value do |setup|
+        @failed_assertions_amount += 1
 
-        task, spec, scenario, test, error, ident = setup
+        task, spec, scenario, assertion, error, ident = setup
 
         nl
         stdout task
         stdout spec, 1
         stdout scenario, ident
-        stdout [Colorize.alert(test), error[:source]].join(' at '), ident
+        stdout [Colorize.alert(assertion), error[:source]].join(' at '), ident
 
         if (exception = error[:exception]).is_a?(Exception)
           stdout exception.message, ident, :error
@@ -136,14 +136,14 @@ module Spine
       stdout 'Specs:       %s%s' % [@total_specs, @skipped_specs.size > 0 ? ' (%s skipped)' % @skipped_specs.size : '']
       stdout 'Scenarios:   %s%s' % [@total_scenarios, @skipped_scenarios.size > 0 ? ' (%s skipped)' % @skipped_scenarios.size : '']
       stdout 'Tests:       %s%s' % [
-          @total_tests,
-          @failed_tests_amount > 0 ? ' (%s failed)' % @failed_tests_amount : '',
-      ], 0, @failed_tests_amount > 0 ? :error : :success
+          @total_assertions,
+          @failed_assertions_amount > 0 ? ' (%s failed)' % @failed_assertions_amount : '',
+      ], 0, @failed_assertions_amount > 0 ? :error : :success
       stdout
     end
 
     def to_s
-      (output + skipped_tasks + skipped_specs + skipped_scenarios + failed_tests + summary).join("\n")
+      (output + skipped_tasks + skipped_specs + skipped_scenarios + failed_assertions + summary).join("\n")
     end
 
     private

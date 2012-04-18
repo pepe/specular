@@ -9,9 +9,9 @@ module Spine
 
       @file, @line = caller[2].split(/\:in\s+`/).first.scan(/(.*)\:(\d+)$/).flatten
       @task.spine__source_files[@file] ||= ::File.readlines(@file)
-      @test = @task.spine__source_files[@file][@line.to_i-1].strip
+      @assertion = @task.spine__source_files[@file][@line.to_i-1].strip
 
-      @task.spine__total_tests :+
+      @task.spine__total_assertions :+
     end
 
     def object
@@ -115,7 +115,7 @@ module Spine
     alias to_throw_symbol throw_symbol
 
     def method_missing meth, *args
-      raise('--- specs can not be defined inside tests ---') if meth == :spec
+      raise('--- specs can not be defined inside tests ---') if meth == :Spec
       evaluate(message: 'failed') { @task.send meth, object, *args }
     end
 
@@ -125,31 +125,31 @@ module Spine
 
       return if @task.spine__context_skipped?
 
-      @task.spine__output @test, :alert
+      @task.spine__output @assertion, :alert
 
       if @task.spine__failures?
-        return @task.spine__output ' - test skipped due to previous failures', :warn
+        return @task.spine__output ' - assertion skipped due to previous failures', :warn
       end
 
-      # any test is considered failed until it is explicitly passed
+      # any assertion marked as failed until it is explicitly passed
       @task.passed? false
 
       begin
 
         # executing :before hooks
-        @task.spine__hooks(:a).each { |p| @task.instance_exec(@test, &p) }
+        @task.spine__hooks(:a).each { |p| @task.instance_exec(@assertion, &p) }
 
-        # executing the test
+        # evaluating assertion
         result = proc.call
 
         if @assert_is == true ? result : [false, nil].include?(result)
-          # marking the test as passed
+          # marking the assertion as passed
           @task.passed? true
           @task.spine__output.success '- passed'
         end
 
         # executing :after hooks
-        @task.spine__hooks(:z).each { |p| @task.instance_exec(@test, &p) }
+        @task.spine__hooks(:z).each { |p| @task.instance_exec(@assertion, &p) }
 
       rescue => e
         error[:exception] = e
@@ -159,7 +159,7 @@ module Spine
     end
 
     def failed error = {}
-      @task.spine__failed_tests @test, error.update(object: object, source: [@file, @line].join(':'))
+      @task.spine__failed_assertions @assertion, error.update(object: object, source: [@file, @line].join(':'))
       @task.spine__output '- failed', :error
       false
     end
