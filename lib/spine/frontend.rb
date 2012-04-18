@@ -9,7 +9,7 @@ module Spine
       @skipped_tasks = {}
       @total_specs, @skipped_specs = 0, {}
       @total_tests, @skipped_tests = 0, {}
-      @total_assertions, @failed_assertions, @failed_assertions_amount = 0, {}, 0
+      @total_assertions, @failed_assertions = 0, {}
     end
 
     def run
@@ -36,7 +36,11 @@ module Spine
     end
 
     def passed?
-      @failed_assertions_amount == 0
+      failed == 0
+    end
+
+    def failed
+      @failed_assertions.size
     end
 
     def output
@@ -71,7 +75,7 @@ module Spine
     def skipped_tests
       reset_stdout
       return stdout unless @skipped_tests.size > 0
-      nl; stdout "--- Skipped Scenarios ---", 0, :alert
+      nl; stdout "--- Skipped Tests ---", 0, :alert
       @skipped_tests.each_value do |s|
         nl
         stdout s[:task]
@@ -81,14 +85,13 @@ module Spine
       stdout
     end
 
-    def failed_assertions
+    def failures
       reset_stdout
       return stdout unless @failed_assertions.size > 0
       nl; stdout "--- Failed Tests ---", 0, :warn
       backtrace_alert = nil
       nl
       @failed_assertions.each_value do |setup|
-        @failed_assertions_amount += 1
 
         task, spec, test, assertion, error, ident = setup
 
@@ -134,16 +137,13 @@ module Spine
       nl; stdout '---'
       stdout 'Tasks:       %s%s' % [@tasks.size, @skipped_tasks.size > 0 ? ' (%s skipped)' % @skipped_tasks.size : '']
       stdout 'Specs:       %s%s' % [@total_specs, @skipped_specs.size > 0 ? ' (%s skipped)' % @skipped_specs.size : '']
-      stdout 'Scenarios:   %s%s' % [@total_tests, @skipped_tests.size > 0 ? ' (%s skipped)' % @skipped_tests.size : '']
-      stdout 'Tests:       %s%s' % [
-          @total_assertions,
-          @failed_assertions_amount > 0 ? ' (%s failed)' % @failed_assertions_amount : '',
-      ], 0, @failed_assertions_amount > 0 ? :error : :success
+      stdout 'Tests:       %s%s' % [@total_tests, @skipped_tests.size > 0 ? ' (%s skipped)' % @skipped_tests.size : '']
+      stdout 'Assertions:  %s%s' % [@total_assertions, passed? ? '' : ' (%s failed)' % failed], 0, passed? ? :success : :error
       stdout
     end
 
     def to_s
-      (output + skipped_tasks + skipped_specs + skipped_tests + failed_assertions + summary).join("\n")
+      (output + skipped_tasks + skipped_specs + skipped_tests + failures + summary).join("\n")
     end
 
     private

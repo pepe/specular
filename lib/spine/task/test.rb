@@ -1,7 +1,9 @@
 module Spine
   module Task
 
-    [:Given, :When, :Then, :It, :If, :Let, :Say, :Assume, :Suppose, :And, :Nor, :But, :However, :Should].each do |prefix|
+    [:Test, :Testing,
+     :Given, :When, :Then, :It, :If, :Let, :Say, :Assume, :Suppose,
+     :And, :Or, :Nor, :But, :However, :Should].each do |prefix|
       define_method prefix do |*args, &proc|
         spine__test prefix, *args, &proc
       end
@@ -28,7 +30,13 @@ module Spine
       spine__test_skipped if opts[:skip]
       spine__output(name) unless spine__context_skipped?
 
+      # executing :before hooks
+      spine__hooks(:a).each { |hook| self.instance_exec(goal, opts, &hook) }
+
       self.instance_exec &proc
+
+      # executing :after hooks
+      spine__hooks(:z).each { |hook| self.instance_exec(goal, opts, &hook) }
 
       spine__context.pop
       spine__nesting_level :-

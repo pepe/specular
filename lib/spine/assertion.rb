@@ -1,5 +1,5 @@
 module Spine
-  class Evaluator
+  class Assertion
 
     def initialize assert_is, task, proxy, object = nil, &proc
       @assert_is, @task, @proxy, @object, @proc =
@@ -135,9 +135,6 @@ module Spine
 
       begin
 
-        # executing :before hooks
-        @task.spine__hooks(:a).each { |p| @task.instance_exec(@assertion, &p) }
-
         # evaluating assertion
         result = proc.call
 
@@ -146,9 +143,6 @@ module Spine
           @task.passed? true
           @task.spine__output.success '- passed'
         end
-
-        # executing :after hooks
-        @task.spine__hooks(:z).each { |p| @task.instance_exec(@assertion, &p) }
 
       rescue => e
         error[:exception] = e

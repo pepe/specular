@@ -36,5 +36,5 @@ lib = File.expand_path('../spine', __FILE__) << '/'
 utils
 task/*
 frontend
-evaluator
+assertion
 ].each { |r| Dir[lib + r + '.rb'].each { |f| require f } }

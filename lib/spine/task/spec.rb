@@ -3,12 +3,12 @@ module Spine
 
     def Spec name, opts = {}, &proc
 
-      raise('--- specs can not be defined inside specs ---') if spine__current_spec
       raise('--- specs can not be defined inside tests ---') if spine__current_test
 
       spine__total_specs :+
       spine__nesting_level :+
 
+      prev_spec = spine__current_spec
       spine__current_spec name: name,
                           proc: proc,
                           task: (spine__current_task||{})[:name]
@@ -23,7 +23,7 @@ module Spine
       spine__context.pop
       spine__nesting_level :-
 
-      spine__current_spec nil
+      spine__current_spec prev_spec
     end
 
     def spine__current_spec *args

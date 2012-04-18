@@ -3,13 +3,13 @@ module Spine
 
     [:is, :is?, :are, :are?, :does, :does?, :expect, :assert].each do |meth|
       define_method meth do |object = nil, &proc|
-        ::Spine::Evaluator.new true, self, __method__, object, &proc
+        ::Spine::Assertion.new true, self, __method__, object, &proc
       end
     end
 
     [:refute, :false?].each do |meth|
       define_method meth do |object = nil, &proc|
-        ::Spine::Evaluator.new false, self, __method__, object, &proc
+        ::Spine::Assertion.new false, self, __method__, object, &proc
       end
     end
 

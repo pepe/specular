@@ -1,91 +1,90 @@
 module SpineTest
   class HooksTest < MiniTest::Unit::TestCase
 
-    def test_before
+    def test_hooks
 
-      expectations = [
-          :task, :spec_1, :scenario_1, :scenario_1_1, :scenario_1_2, :scenario_2, :spec_2
-      ]
-      expectations = Hash[expectations.zip]
+      expectations = [:task, :spec_1, :spec_1_context, :spec_1_1, :spec_2]
+      expectations = Hash[expectations.zip expectations.map { 0 }]
 
       hooks = []
       Spine.task __method__ do
 
         before do
-          hooks << :task
+          hooks << :task_A
+        end
+        after do
+          hooks << :task_Z
         end
 
         hooks = []
-        is(1) == 1
-        hooks == [:task] && expectations[:task] = true
+        Testing :task do
+          hooks == [:task_A] && expectations[:task] += 1
+        end
+        hooks == [:task_A, :task_Z] && expectations[:task] += 1
 
+        hooks = []
         Spec :spec_1 do
 
           before do
-            hooks << :spec_1
+            hooks << :spec_1_A
+          end
+          after do
+            hooks << :spec_1_Z
           end
 
           hooks = []
-          is(1) == 1
-          hooks == [:task, :spec_1] && expectations[:spec_1] = true
+          Testing :spec_1 do
+            hooks == [:task_A, :spec_1_A] && expectations[:spec_1] += 1
+          end
+          hooks == [:task_A, :spec_1_A, :task_Z, :spec_1_Z] && expectations[:spec_1] += 1
 
-          Say :scenario_1 do
+          hooks = []
+          Spec :spec_1_1 do
 
             before do
-              hooks << :scenario_1
+              hooks << :spec_1_1_A
+            end
+            after do
+              hooks << :spec_1_1_Z
             end
 
             hooks = []
-            is(1) == 1
-            hooks == [:task, :spec_1, :scenario_1] && expectations[:scenario_1] = true
-
-            Say :scenario_1_1 do
-              before do
-                hooks << :scenario_1_1
-              end
-
-              hooks = []
-              is(1) == 1
-              hooks == [:task, :spec_1, :scenario_1, :scenario_1_1] && expectations[:scenario_1_1] = true
-
+            Testing :spec_1_1 do
+              hooks == [:task_A, :spec_1_A, :spec_1_1_A] && expectations[:spec_1_1] += 1
             end
-
-            Say :scenario_1_2 do
-
-              hooks = []
-              is(1) == 1
-              hooks == [:task, :spec_1, :scenario_1] && expectations[:scenario_1_2] = true
-
-            end
+            hooks == [:task_A, :spec_1_A, :spec_1_1_A, :task_Z, :spec_1_Z, :spec_1_1_Z] && expectations[:spec_1_1] += 1
 
           end
 
-          Say :scenario_2 do
-
-            before do
-              hooks << :scenario_2
-            end
-
-            hooks = []
-            is(1) == 1
-            hooks == [:task, :spec_1, :scenario_2] && expectations[:scenario_2] = true
+          hooks = []
+          Testing :spec_1_context do
+            hooks == [:task_A, :spec_1_A] && expectations[:spec_1_context] += 1
           end
+          hooks == [:task_A, :spec_1_A, :task_Z, :spec_1_Z] && expectations[:spec_1_context] += 1
+
         end
 
         Spec :spec_2 do
+
           before do
-            hooks << :spec_2
+            hooks << :spec_2_A
+          end
+          after do
+            hooks << :spec_2_Z
           end
 
           hooks = []
-          is(1) == 1
-          hooks == [:task, :spec_2] && expectations[:spec_2] = true
+          Testing :spec_2 do
+            hooks == [:task_A, :spec_2_A] && expectations[:spec_2] += 1
+          end
+          hooks == [:task_A, :spec_2_A, :task_Z, :spec_2_Z] && expectations[:spec_2] += 1
         end
 
       end
-      Spine.run __method__
+      output = Spine.run __method__
+      puts output.failures unless output.passed?
       expectations.each_pair do |expectation, value|
-        assert_equal value, true, 'expected %s to be true but it is %s' % [expectation, value.inspect]
+        assert_equal value, 2, 'expected %s to be 2 but it is %s' % [expectation, value.inspect]
       end
     end
 
