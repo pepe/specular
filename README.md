@@ -127,8 +127,6 @@ Spine.task NewsController, NewsModel, :status => 1 do |controller, model, filter
 end
 ```
 
-<hr/>
-
 Specs
 ---
 
@@ -174,8 +172,6 @@ Spec 'Skipping for now', skip: true do
   # tests here will not be executed
 end
 ```
-
-<hr/>
 
 Tests
 ---
@@ -241,8 +237,6 @@ Given 'user clicked register', skip: true do
     # tests here will not be executed
 end
 ```
-
-<hr/>
 
 Assertions
 ---
@@ -369,7 +363,6 @@ Running in terminal:
     ruby app.rb
 
 <img src="http://prestorb.org/spine/example-long.png">
-<hr/>
 
 Aliases:
 
@@ -384,8 +377,6 @@ Aliases:
 `check`
 
 Something missing? Please advise.
-
-<hr/>
 
 Builtin Helpers
 ---
@@ -480,8 +471,6 @@ Aliases:
 `to_throw`,
 `to_throw_symbol`
 
-<hr/>
-
 Custom Helpers
 ---
 
@@ -525,8 +514,6 @@ Spine.task do
 
 end
 ```
-
-<hr/>
 
 Hooks
 ---
@@ -596,8 +583,6 @@ Spine.task do
 
 end
 ```
-
-<hr/>
 
 Last test status
 ---
