@@ -30,7 +30,7 @@ module Spine
           output: output, source_files: {},
           current_task: {name: name, proc: proc}, skipped_tasks: {},
           current_spec: nil, total_specs: 0, skipped_specs: {},
-          current_scenario: nil, total_scenarios: 0, skipped_scenarios: {},
+          current_test: nil, total_tests: 0, skipped_tests: {},
           assertion_passed: true, total_assertions: 0, failed_assertions: {},
           hooks: {a: {}, z: {}}, browser: nil,
       }
@@ -71,7 +71,7 @@ module Spine
     end
 
     def spine__context_skipped?
-      spine__task_skipped? || spine__spec_skipped? || spine__scenario_skipped?
+      spine__task_skipped? || spine__spec_skipped? || spine__test_skipped?
     end
 
     def spine__current_task

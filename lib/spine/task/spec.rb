@@ -4,7 +4,7 @@ module Spine
     def Spec name, opts = {}, &proc
 
       raise('--- specs can not be defined inside specs ---') if spine__current_spec
-      raise('--- specs can not be defined inside scenarios ---') if spine__current_scenario
+      raise('--- specs can not be defined inside tests ---') if spine__current_test
 
       spine__total_specs :+
       spine__nesting_level :+

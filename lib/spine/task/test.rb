@@ -1,42 +1,66 @@
 module Spine
   module Task
 
-    [:is, :is?, :are, :are?, :does, :does?, :expect, :assert].each do |meth|
-      define_method meth do |object = nil, &proc|
-        ::Spine::Evaluator.new true, self, __method__, object, &proc
+    [:Given, :When, :Then, :It, :If, :Let, :Say, :Assume, :Suppose, :And, :Nor, :But, :However, :Should].each do |prefix|
+      define_method prefix do |*args, &proc|
+        spine__test prefix, *args, &proc
       end
     end
 
-    [:refute, :false?].each do |meth|
-      define_method meth do |object = nil, &proc|
-        ::Spine::Evaluator.new false, self, __method__, object, &proc
+    def spine__test prefix, goal, opts = {}, &proc
+
+      proc || raise('--- tests need a proc to run ---')
+
+      name = [prefix, goal].join(' ')
+
+      spine__total_tests :+
+      spine__nesting_level :+
+
+      prev_test = spine__current_test
+      spine__current_test name: name,
+                          proc: proc,
+                          task: (spine__current_task||{})[:name],
+                          spec: (spine__current_spec||{})[:name],
+                          ident: spine__nesting_level
+
+      spine__context << proc
+
+      spine__test_skipped if opts[:skip]
+      spine__output(name) unless spine__context_skipped?
+
+      self.instance_exec &proc
+
+      spine__context.pop
+      spine__nesting_level :-
+
+      spine__current_test prev_test
+
+      spine__output('') unless spine__context_skipped?
+    end
+
+    def spine__current_test *args
+      @__spine__vars_pool__.current_test = args.first if args.size > 0
+      @__spine__vars_pool__.current_test
+    end
+
+    def spine__total_tests op = nil
+      @__spine__vars_pool__.total_tests += 1 if op == :+
+      @__spine__vars_pool__.total_tests
+    end
+
+    def spine__skipped_tests
+      @__spine__vars_pool__.skipped_tests
+    end
+
+    def spine__test_skipped
+      spine__skipped_tests[spine__context.dup] = spine__current_test
+    end
+
+    def spine__test_skipped?
+      spine__skipped_tests.each_key do |context|
+        return true if spine__context[0, context.size] == context
       end
-    end
-
-    def passed? *args
-      @__spine__vars_pool__.assertion_passed = args.first if args.size > 0
-      @__spine__vars_pool__.assertion_passed
-    end
-
-    def failed?
-      !passed?
-    end
-
-    def spine__total_assertions op = nil
-      @__spine__vars_pool__.total_assertions += 1 if op == :+
-      @__spine__vars_pool__.total_assertions
-    end
-
-    def spine__failed_assertions assertion = nil, error = nil
-      @__spine__vars_pool__.failed_assertions[spine__context.dup] = [
-          (spine__current_task || {})[:name],
-          (spine__current_spec || {})[:name],
-          (spine__current_scenario || {})[:name],
-          assertion,
-          error,
-          spine__nesting_level
-      ] if assertion
-      @__spine__vars_pool__.failed_assertions
+      nil
     end
 
   end

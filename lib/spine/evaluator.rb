@@ -115,7 +115,6 @@ module Spine
     alias to_throw_symbol throw_symbol
 
     def method_missing meth, *args
-      raise('--- specs can not be defined inside tests ---') if meth == :Spec
       evaluate(message: 'failed') { @task.send meth, object, *args }
     end
 

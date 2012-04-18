@@ -8,7 +8,7 @@ module Spine
       @output = []
       @skipped_tasks = {}
       @total_specs, @skipped_specs = 0, {}
-      @total_scenarios, @skipped_scenarios = 0, {}
+      @total_tests, @skipped_tests = 0, {}
       @total_assertions, @failed_assertions, @failed_assertions_amount = 0, {}, 0
     end
 
@@ -26,8 +26,8 @@ module Spine
         @total_specs += task_instance.spine__total_specs
         @skipped_specs.update task_instance.spine__skipped_specs
 
-        @total_scenarios += task_instance.spine__total_scenarios
-        @skipped_scenarios.update task_instance.spine__skipped_scenarios
+        @total_tests += task_instance.spine__total_tests
+        @skipped_tests.update task_instance.spine__skipped_tests
 
         @total_assertions += task_instance.spine__total_assertions
         @failed_assertions.update task_instance.spine__failed_assertions
@@ -68,11 +68,11 @@ module Spine
       stdout
     end
 
-    def skipped_scenarios
+    def skipped_tests
       reset_stdout
-      return stdout unless @skipped_scenarios.size > 0
+      return stdout unless @skipped_tests.size > 0
       nl; stdout "--- Skipped Scenarios ---", 0, :alert
-      @skipped_scenarios.each_value do |s|
+      @skipped_tests.each_value do |s|
         nl
         stdout s[:task]
         stdout s[:spec], 1
@@ -90,12 +90,12 @@ module Spine
       @failed_assertions.each_value do |setup|
         @failed_assertions_amount += 1
 
-        task, spec, scenario, assertion, error, ident = setup
+        task, spec, test, assertion, error, ident = setup
 
         nl
         stdout task
         stdout spec, 1
-        stdout scenario, ident
+        stdout test, ident
         stdout [Colorize.alert(assertion), error[:source]].join(' at '), ident
 
         if (exception = error[:exception]).is_a?(Exception)
@@ -134,7 +134,7 @@ module Spine
       nl; stdout '---'
       stdout 'Tasks:       %s%s' % [@tasks.size, @skipped_tasks.size > 0 ? ' (%s skipped)' % @skipped_tasks.size : '']
       stdout 'Specs:       %s%s' % [@total_specs, @skipped_specs.size > 0 ? ' (%s skipped)' % @skipped_specs.size : '']
-      stdout 'Scenarios:   %s%s' % [@total_scenarios, @skipped_scenarios.size > 0 ? ' (%s skipped)' % @skipped_scenarios.size : '']
+      stdout 'Scenarios:   %s%s' % [@total_tests, @skipped_tests.size > 0 ? ' (%s skipped)' % @skipped_tests.size : '']
       stdout 'Tests:       %s%s' % [
           @total_assertions,
           @failed_assertions_amount > 0 ? ' (%s failed)' % @failed_assertions_amount : '',
@@ -143,7 +143,7 @@ module Spine
     end
 
     def to_s
-      (output + skipped_tasks + skipped_specs + skipped_scenarios + failed_assertions + summary).join("\n")
+      (output + skipped_tasks + skipped_specs + skipped_tests + failed_assertions + summary).join("\n")
     end
 
     private
