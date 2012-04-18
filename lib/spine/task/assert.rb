@@ -1,7 +1,7 @@
 module Spine
   module Task
 
-    [:is, :is?, :are, :are?, :does, :does?, :expect, :assert].each do |meth|
+    [:is, :is?, :are, :are?, :does, :does?, :expect, :assert, :check].each do |meth|
       define_method meth do |object = nil, &proc|
         ::Spine::Assertion.new true, self, __method__, object, &proc
       end

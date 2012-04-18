@@ -1,33 +1,21 @@
 
 <blockquote>
-<strong>Would you rather Test-First or Debug-Later?</strong><br/>
-Robert Martin
-</blockquote>
+<strong>"Would you rather Test-First or Debug-Later?"</strong>
+</blockquote><br/>
+- Robert Martin
+
+<blockquote>
+<strong>"Simplicity is the ultimate sophistication"</strong>
+</blockquote><br/>
+- Leonardo da Vinci
 
 ### Motivation
 
-*   I need to write logic and tests using same ink on same paper, meant they physically should be on same page - visual contact are very important to me.
 *   I do not want to learn how to test. I simply want to ask Ruby: is foo == bar, or does foo respond to bar etc.
 *   No monkey patching. I need tested objects and Ruby classes to stay pristine.
+*   Occasionally, i need to write code and tests simultaneously, on same page, keeping the visual contact.
+    I can later move tests to right place, but when writing code i need to have tests nearby, cause switching files leads to attention disruption.
 *   I need verbose, granular and manageable output.
-
-### Implementation
-
-**The Rule of Two Brackets**
-
-Tested objects should always be placed inside brackets(round or curly ones).
-
-```ruby
-is(foo) == bar
-is(foo).eql? bar
-is(foo) > bar
-does(foo).include? bar
-are(foo).instance_of? bar
-does { foo.is_doing_something_risky }.raise_error?
-expect { foo.bar }.to_throw_symbol
-```
-
-Anything is done in natural, easy and rememberable way, without any object to be hacked.
 
 ### Getting Started
 
@@ -42,24 +30,34 @@ Anything is done in natural, easy and rememberable way, without any object to be
 **Use**
 
 ```ruby
-class App
+class Controller
 
-    def body
-        'some text'
+    # writing action
+    def buy product
+        # render action
     end
 
     # writing tests
-    Spine.vertebra 'GenericTest' do
+    Spine.task :buy do
 
-        Should 'do a simple test' do
+        product = Model::Product.first
 
-            body = App.new.body
+        Suppose 'user clicked Buy button' do
 
-            is(body) == 'some text'
-            # - passed
+            response = get "/buy/#{ product.url }"
 
-            does(body) =~ /text/
-            # - passed
+            is?( response.status ) == 200
+
+            He 'should see the order details' do
+
+                does?( response.body ) =~ /order details/
+
+                And 'invitation to use credit card' do
+
+                    does?( response.body ) =~ /credit card/
+
+                end
+            end
         end
     end
 end
@@ -68,8 +66,7 @@ end
 puts Spine.run
 ```
 
-<img src="http://prestorb.org/spine/example.png">
-
+<hr/>
 
 # Tutorial
 
@@ -78,14 +75,14 @@ Tasks
 
 Spine tasks can be defined anywhere in your code and executed anywhere too,
 by calling `Spine.run('task name')`,<br/>
-or just `Spine.run` to execute all defined tasks.
+or just `Spine.run` to run all defined tasks.
 
 ```ruby
 # Defining tasks:
 
 class TestedClass
 
-    # define your methods
+    # define methods
 
     Spine.task :test_integers do
         # test your methods
@@ -120,8 +117,23 @@ Spine.task :some_task, skip: true do
 end
 ```
 
+All arguments passed to tasks are available as block parameters.<br/>
+Use convenient names to read them:
+
+```ruby
+Spine.task NewsController, NewsModel, :status => 1 do |controller, model, filter|
+  item = model.find filter
+  action = controller.http.route action
+end
+```
+
+<hr/>
+
 Specs
 ---
+
+Specs can be defined only inside tasks.<br/>
+Very useful when you need to define multiple tests in same context.
 
 First argument is required and should contain spec name/description.<br/>
 Second argument are optional and may contain a hash of options.
@@ -139,7 +151,22 @@ Spine.task do
 end
 ```
 
-To skip an spec, set :skip option to true:
+Specs can be nested:
+
+```ruby
+Spec 'Testing links' do
+
+  Spec 'outgoing links' do
+    # some logic
+  end
+
+  Spec 'internal links' do
+    # some logic
+  end
+end
+```
+
+To skip a spec, set :skip option to true:
 
 ```ruby
 Spec 'Skipping for now', skip: true do
@@ -147,53 +174,66 @@ Spec 'Skipping for now', skip: true do
 end
 ```
 
-Scenarios
+<hr/>
+
+Tests
 ---
 
-Scenarios are optional, however they are very useful when we need to split a spec into logical parts.
+Defining a test is as easy as think about it.
+
+Tests can be defined inside specs or directly inside tasks.
+
+```ruby
+Spine.task do
+
+    Test :Nr1 do
+        # some logic and assertions
+    end
+
+    Test :Nr2 do
+        # some logic and assertions
+    end
+end
+```
+
+```ruby
+Spine.task do
+
+    Testing :UI do
+        # some logic and assertions
+    end
+end
+```
 
 ```ruby
 Spine.task do
 
     Spec 'Testing theory of relativity' do
 
-      Suppose "I'm Superman" do
-        And "I can fly" do
-          But "I can not pry" do
-            When "I'm landing" do
-              is("it real to keep my ass?").kind_of? Random
+        Suppose "I'm Superman" do
+            And "I can fly" do
+                But "I can not pry" do
+                    When "I'm landing" do
+                        is("it real to keep my ass?").kind_of? Random
+                    end
+                end
             end
-          end
         end
-      end
     end
 end
 ```
 
-Scenarios uses capitalized names and should have a name/description passed as first argument.
-
+Tests uses capitalized names and should have a name/description passed as first argument.<br/>
 As per specs, consequent arguments are optional and may contain a hash of options.
 
-Supported scenarios:
+Aliases:
 
-*    `Given`
-*    `When`
-*    `Then`
-*    `It`
-*    `If`
-*    `Let`
-*    `Say`
-*    `Assume`
-*    `Suppose`
-*    `And`
-*    `Nor`
-*    `But`
-*    `However`
-*    `Should`
+`Test`, `Testing`, `Given`, `When`, `Then`, `It`, `If`, `Let`,
+`Say`, `Assume`, `Suppose`, `And`, `Or`, `Nor`, `But`, `However`, `Should`
 
 Something missing? Please advise.
 
-To skip a scenario, set :skip option to true:
+To skip a test, set :skip option to true:
 
 ```ruby
 Given 'user clicked register', skip: true do
@@ -201,36 +241,38 @@ Given 'user clicked register', skip: true do
 end
 ```
 
-Tests
+<hr/>
+
+Assertions
 ---
 
-For tests declaration, Spine uses a single rule - "The Rule of Two Brackets".<br/>
-This is the only rule you'll have to remember, cause anything after brackets is done in pure Ruby,<br/>
-without "wise" tricks and hacks.
+To define assertions you should remember a single rule - "**The Rule of Two Brackets**".
+
+The logic is extremely simple - **tested objects should be placed inside 2 brackets, round or curly**.<br/>
+
+Everything after brackets is done in pure Ruby, without "wise" tricks and hacks.
 
 No code is wiser than no code.
 
-The logic is extremely simple - tested object should be placed inside 2 brackets, round or curly.<br/>
 Let's suppose `foo` is tested object and `bar` is expected value.<br/>
 According to rule of two brackets, the test will look like this:
 
-    is(foo) == bar
+    is?(foo) == bar
 
 Simple? Huh?<br/>
 Let's play a bit...
 
     is?(foo) > bar
-    is(foo) >= bar
-    is?(foo) < bar
-    is(foo) <= bar
-    does(foo) =~ bar
-    is?(foo).instance_of? bar
-    does?(foo).respond_to? bar
+    does?(foo) =~ bar
+    are(foo).instance_of? bar
+    does(foo).respond_to? bar
     # etc
 
-Looks nice.<br/>
-The main virtue - objects are kept pristine!<br/>
-And yes, you can forget about documentation and books about unit testing.
+Looks nice and grammatically correctly.
+
+However, the main virtue is that tested objects are kept pristine!<br/>
+They are just compared to expected value without being hacked and injected with various unneeded artifacts.<br/>
+No more steroids! Ruby is powerful enough!
 
 Here is a live example:
 
@@ -242,6 +284,7 @@ require 'spine'
 class SomeClass
 
   module TestingHelper
+
     def looks_like_a_duck? obj
       obj.to_s =~ /duck/i
     end
@@ -252,6 +295,7 @@ class SomeClass
   end
 
   Spine.task 'SomeTask' do
+  
     Spec 'BasicTests' do
 
       include TestingHelper
@@ -328,16 +372,19 @@ Running in terminal:
 
 Aliases:
 
-*    `is`
-*    `is?`
-*    `are`
-*    `are?`
-*    `does`
-*    `does?`
-*    `expect`
-*    `assert`
+`is`,
+`is?`,
+`are`,
+`are?`,
+`does`,
+`does?`,
+`expect`,
+`assert`,
+`check`
 
 Something missing? Please advise.
+
+<hr/>
 
 Builtin Helpers
 ---
@@ -389,10 +436,10 @@ does{ some bad code here }.raise? NoMethodError, 'blah'
 
 Aliases:
 
-*   `raise?`
-*   `raise_error?`
-*   `to_raise`
-*   `to_raise_error`
+`raise?`,
+`raise_error?`,
+`to_raise`,
+`to_raise_error`
 
 ### throw_symbol
 
@@ -427,11 +474,12 @@ does{ throw :begining_of_times, 'N bc' }.throw_symbol? :begining_of_times, 'toda
 
 Aliases:
 
-*   `throw?`
-*   `throw_symbol?`
-*   `to_throw`
-*   `to_throw_symbol`
+`throw?`,
+`throw_symbol?`,
+`to_throw`,
+`to_throw_symbol`
 
+<hr/>
 
 Custom Helpers
 ---
@@ -444,6 +492,7 @@ module SomeHelper
         (min..max).include? val
     end
 end
+
 Spine.task do
 
     include SomeModule
@@ -476,6 +525,8 @@ Spine.task do
 end
 ```
 
+<hr/>
+
 Hooks
 ---
 
@@ -494,7 +545,7 @@ Spine.task do
     @page.destroy
   end
 
-  # any test inside any spec/scenario will execute this hooks
+  # all tests inside task will execute this hooks
 end
 ```
 
@@ -518,33 +569,34 @@ Spine.task do
 end
 ```
 
-And of course scenarios may have hooks as well, that will be executed only inside given scenario:
+Hooks can not be be defined inside tests. That makes no sense.
+
+Worth to note that in case of nested specs/tests,
+children will override variables set by parents:
 
 ```ruby
 Spine.task do
 
-    @page = Model::Page.first
+  before do
+    @n = 0
+  end
 
-    Spec 'SomeSpec' do
+  Test :Nr1 do
 
-      Should 'run a hook that will modify @page status' do
+    # @n is 0
+    @n += 1 # @n is 1
 
-        before do
-          @page.status = 1
-          # this will be executed only inside current scenario and its children
-        end
-
-        And 'this scenario will modify @page status too' do
-        end
-
-      end
-
-      However 'this scenario wont modify @page status' do
-      end
-
+    Test :Nr1_1 do
+      # @n is 0
     end
+
+    # @n is 0 cause it was override by Test Nr1_1
+  end
+
 end
 ```
+
+<hr/>
 
 Last test status
 ---
@@ -553,11 +605,11 @@ Last test status
 *   `failed?` - returns true if last test failed
 
 ```ruby
-is(1) == 1
+is?(1) == 1
 passed? # true
 failed? # false
 
-is(1) == 0
+is?(1) == 0
 passed? # false
 failed? # true
 ```
@@ -652,13 +704,14 @@ puts Spine.run /^Forum/
 
 Results can also be printed separately:
 
-*    `passed?` - returns true if all tests passed
-*    `output` - details about testing process
+*    `passed?`  - returns true if all tests passed
+*    `output`   - details about testing process
+*    `failures` - details about failed tests
+*    `failed`   - failed tests amount
+*    `summary`
 *    `skipped_tasks`
 *    `skipped_specs`
-*    `skipped_scenarios`
-*    `failed_tests`
-*    `summary`
+*    `skipped_tests`
 
 ```ruby
 specs = Spine.run
@@ -674,7 +727,7 @@ if specs.skipped_specs.size > 0
   puts specs.skipped_specs
 end
 
-if specs.skipped_scenarios.size > 0
-  puts specs.skipped_scenarios
+if specs.skipped_tests.size > 0
+  puts specs.skipped_tests
 end
 ```

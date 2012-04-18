@@ -2,7 +2,9 @@ module Spine
   module Task
 
     [:Test, :Testing,
-     :Given, :When, :Then, :It, :If, :Let, :Say, :Assume, :Suppose,
+     :Given, :When, :Then,
+     :It, :He, :She,
+     :If, :Let, :Say, :Assume, :Suppose,
      :And, :Or, :Nor, :But, :However, :Should].each do |prefix|
       define_method prefix do |*args, &proc|
         spine__test prefix, *args, &proc
