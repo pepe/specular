@@ -1,12 +1,12 @@
 
 <blockquote>
 <strong>"Would you rather Test-First or Debug-Later?"</strong>
-</blockquote><br/>
+</blockquote>
 - Robert Martin
 
 <blockquote>
 <strong>"Simplicity is the ultimate sophistication"</strong>
-</blockquote><br/>
+</blockquote>
 - Leonardo da Vinci
 
 ### Motivation
