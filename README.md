@@ -132,8 +132,7 @@ end
 Specs
 ---
 
-Specs can be defined only inside tasks.<br/>
-Very useful when you need to define multiple tests in same context.
+Used when you need to define multiple tests within same context.
 
 First argument is required and should contain spec name/description.<br/>
 Second argument are optional and may contain a hash of options.
@@ -165,6 +164,8 @@ Spec 'Testing links' do
   end
 end
 ```
+
+Specs can be defined only inside tasks.
 
 To skip a spec, set :skip option to true:
 
