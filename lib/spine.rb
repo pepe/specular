@@ -34,7 +34,7 @@ lib = File.expand_path('../spine', __FILE__) << '/'
 
 %w[
 utils
+assert
 task/*
 frontend
-assertion
 ].each { |r| Dir[lib + r + '.rb'].each { |f| require f } }

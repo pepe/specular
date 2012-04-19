@@ -1,5 +1,5 @@
 module Spine
-  class Assertion
+  class Assert
 
     def initialize assert_is, task, proxy, object = nil, &proc
       @assert_is, @task, @proxy, @object, @proc =

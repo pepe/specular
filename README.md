@@ -691,8 +691,9 @@ puts Spine.run /^Forum/
 Results can also be printed separately:
 
 *    `passed?`  - returns true if all tests passed
-*    `failures` - details about failed tests
+*    `failed?`  - returns true if at least one test failed
 *    `failed`   - failed tests amount
+*    `failures` - details about failed tests
 *    `output`   - details about testing process
 *    `summary`
 *    `skipped_tasks`

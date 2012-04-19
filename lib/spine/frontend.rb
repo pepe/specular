@@ -39,6 +39,10 @@ module Spine
       failed == 0
     end
 
+    def failed?
+      failed > 0
+    end
+
     def failed
       @failed_assertions.size
     end

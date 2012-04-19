@@ -82,7 +82,7 @@ module SpineTest
 
       end
       output = Spine.run __method__
-      puts output.failures unless output.passed?
+      puts output.failures if output.failed?
       expectations.each_pair do |expectation, value|
         assert_equal value, 2, 'expected %s to be 2 but it is %s' % [expectation, value.inspect]
       end
