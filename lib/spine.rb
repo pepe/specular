@@ -21,12 +21,15 @@ module Spine
     end
 
     def run *args
-      opts = args.last.is_a?(Hash) ? args.pop : {}
+      @opts = args.last.is_a?(Hash) ? args.pop : {}
       tasks = args.size > 0 ?
           tasks().select { |t| args.select { |a| t=t.first.first.to_s; a.is_a?(Regexp) ? t =~ a : t == a.to_s }.size > 0 } :
           tasks()
-      Spine::Frontend.new(tasks, opts).run
+      Spine::Frontend.new(tasks, @opts).run
     end
+
+    private
+    attr_reader :opts
   end
 end
 
