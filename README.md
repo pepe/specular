@@ -44,7 +44,7 @@ class Controller
 
         Suppose 'user clicked Buy button' do
 
-            response = get "/buy/" << product.url
+            response = get("/buy/" << product.url)
 
             is?( response.status ) == 200
 
