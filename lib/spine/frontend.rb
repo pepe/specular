@@ -123,9 +123,9 @@ module Spine
               Colorize.error(error[:message].to_s.strip) :
               '%s %s %s %s' % [
                   Colorize.warn(error[:proxy]),
-                  ([NilClass, String, Symbol].include?(error[:object].class) ? error[:object].inspect : error[:object]),
+                  presenter__expected_vs_received(error[:object]),
                   Colorize.warn(error[:method]),
-                  (error[:expected]||[]).compact.join(', ')
+                  presenter__expected_vs_received((error[:expected]||[]).compact.join(', '))
               ]
           stdout message, ident
         end
@@ -175,6 +175,10 @@ module Spine
       end
       str = [' '*(2*ident), chunk].join
       (@stdout||reset_stdout) << (color ? Colorize.send(color, str) : str)
+    end
+
+    def presenter__expected_vs_received obj
+      [NilClass, String, Symbol].include?(obj.class) ? obj.inspect : obj
     end
 
   end
