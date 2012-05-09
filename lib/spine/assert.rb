@@ -154,7 +154,7 @@ module Spine
     def failed error = {}
       @task.spine__failed_assertions @assertion, error.update(object: object, source: [@file, @line].join(':'))
       @task.spine__output '- failed', :error
-      false
+      throw @task.spine__halting_symbol
     end
 
   end

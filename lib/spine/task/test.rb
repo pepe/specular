@@ -35,7 +35,9 @@ module Spine
       # executing :before hooks
       spine__hooks(:a).each { |hook| self.instance_exec(goal, opts, &hook) }
 
-      self.instance_exec &proc
+      catch spine__halting_symbol do
+        self.instance_exec &proc
+      end
 
       # executing :after hooks
       spine__hooks(:z).each { |hook| self.instance_exec(goal, opts, &hook) }

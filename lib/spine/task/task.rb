@@ -32,7 +32,7 @@ module Spine
           current_spec: nil, total_specs: 0, skipped_specs: {},
           current_test: nil, total_tests: 0, skipped_tests: {},
           assertion_passed: true, total_assertions: 0, failed_assertions: {},
-          hooks: {a: {}, z: {}}, browser: nil,
+          hooks: {a: {}, z: {}}, browser: nil
       }
       @__spine__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
 
@@ -43,7 +43,9 @@ module Spine
         spine__output name
       end
 
-      self.instance_exec *args, &proc
+      catch spine__halting_symbol do
+        self.instance_exec *args, &proc
+      end
     end
 
     def spine__last_error
@@ -102,6 +104,10 @@ module Spine
         return true if spine__context[0, context.size] == context
       end
       nil
+    end
+
+    def spine__halting_symbol
+      ('spine__halting_symbol__%s' % spine__context.dup.last).to_sym
     end
 
     def spine__nesting_level op = nil

@@ -18,7 +18,9 @@ module Spine
       spine__spec_skipped if opts[:skip]
       spine__output name unless spine__context_skipped?
 
-      self.instance_exec &proc
+      catch spine__halting_symbol do
+        self.instance_exec &proc
+      end
 
       spine__context.pop
       spine__nesting_level :-
