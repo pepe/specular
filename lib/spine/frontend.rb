@@ -123,7 +123,7 @@ module Spine
               Colorize.error(error[:message].to_s.strip) :
               '%s %s %s %s' % [
                   Colorize.warn(error[:proxy]),
-                  error[:object],
+                  ([NilClass, String, Symbol].include?(error[:object].class) ? error[:object].inspect : error[:object]),
                   Colorize.warn(error[:method]),
                   (error[:expected]||[]).compact.join(', ')
               ]

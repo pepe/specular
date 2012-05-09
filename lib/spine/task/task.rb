@@ -13,8 +13,6 @@ module Spine
         output.define_singleton_method meth do |snippet|
           return if task.spine__context_skipped?
           self << [snippet.to_s, task.spine__nesting_level, __method__]
-          task.failed? &&
-              (task.spine__last_error[:details]||=[]) << [snippet.to_s, __method__]
         end
       end
       output.define_singleton_method :last_error do
