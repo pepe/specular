@@ -34,14 +34,13 @@ module Spine
         end
       end
 
-
       def __spine__output__ snippet = nil, color = nil
-        @__spine__vars_pool__.output << [snippet.to_s, __spine__nesting_level__, color].compact if snippet
-        @__spine__vars_pool__.output
+        __spine__.output << [snippet.to_s, __spine__nesting_level__, color].compact if snippet
+        __spine__.output
       end
 
       def __spine__context__
-        @__spine__vars_pool__.context
+        __spine__.context
       end
 
       def __spine__context_skipped?
@@ -49,11 +48,11 @@ module Spine
       end
 
       def __spine__current_task__
-        @__spine__vars_pool__.current_task
+        __spine__.current_task
       end
 
       def __spine__skipped_tasks__
-        @__spine__vars_pool__.skipped_tasks
+        __spine__.skipped_tasks
       end
 
       def __spine__skip_task!
@@ -68,7 +67,7 @@ module Spine
       end
 
       def __spine__source_files__
-        @__spine__vars_pool__.source_files
+        __spine__.source_files
       end
 
       def __spine__last_error__
@@ -80,16 +79,21 @@ module Spine
       end
 
       def __spine__hooks__ position
-        @__spine__vars_pool__.hooks[position].map do |map|
+        __spine__.hooks[position].map do |map|
           context, hook = map
           hook if __spine__context__[0, context.size] == context
         end.compact
       end
 
       def __spine__nesting_level__ op = nil
-        @__spine__vars_pool__.nesting_level += 1 if op == :+
-        @__spine__vars_pool__.nesting_level -= 1 if op == :-
-        @__spine__vars_pool__.nesting_level
+        __spine__.nesting_level += 1 if op == :+
+        __spine__.nesting_level -= 1 if op == :-
+        __spine__.nesting_level
+      end
+
+      private
+      def __spine__
+        @__spine__vars_pool__
       end
 
     end
@@ -102,8 +106,8 @@ module Spine
       end
 
       def o s = nil
-        return @__spine__vars_pool__.output.info(s) if s
-        @__spine__vars_pool__.output
+        return __spine__.output.info(s) if s
+        __spine__.output
       end
 
       alias d o
@@ -134,11 +138,11 @@ module Spine
       #    end
       #
       def before &proc
-        @__spine__vars_pool__.hooks[:a] << [__spine__context__.dup, proc]
+        __spine__.hooks[:a] << [__spine__context__.dup, proc]
       end
 
       def after &proc
-        @__spine__vars_pool__.hooks[:z] << [__spine__context__.dup, proc]
+        __spine__.hooks[:z] << [__spine__context__.dup, proc]
       end
 
     end
@@ -159,19 +163,19 @@ module Spine
       end
 
       def __spine__total_assertions__ op = nil
-        @__spine__vars_pool__.total_assertions += 1 if op == :+
-        @__spine__vars_pool__.total_assertions
+        __spine__.total_assertions += 1 if op == :+
+        __spine__.total_assertions
       end
 
       def __spine__failed_assertions__ assertion = nil, error = nil
-        @__spine__vars_pool__.failed_assertions[__spine__context__.dup] = [
+        __spine__.failed_assertions[__spine__context__.dup] = [
             (__spine__current_task__ || {})[:name],
             (__spine__current_test__ || {})[:name],
             assertion,
             error,
             __spine__nesting_level__
         ] if assertion
-        @__spine__vars_pool__.failed_assertions
+        __spine__.failed_assertions
       end
 
     end
@@ -230,17 +234,17 @@ module Spine
       end
 
       def __spine__current_test__ *args
-        @__spine__vars_pool__.current_test = args.first if args.size > 0
-        @__spine__vars_pool__.current_test
+        __spine__.current_test = args.first if args.size > 0
+        __spine__.current_test
       end
 
       def __spine__total_tests__ op = nil
-        @__spine__vars_pool__.total_tests += 1 if op == :+
-        @__spine__vars_pool__.total_tests
+        __spine__.total_tests += 1 if op == :+
+        __spine__.total_tests
       end
 
       def __spine__skipped_tests__
-        @__spine__vars_pool__.skipped_tests
+        __spine__.skipped_tests
       end
 
       def __spine__skip_test!
