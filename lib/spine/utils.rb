@@ -1,6 +1,8 @@
 module Spine
   module Utils
 
+    RUBY_ENGINE = ::Object.constants.include?(:RUBY_ENGINE) ? RUBY_ENGINE : 'ruby'
+
     def proc_source proc
       proc.to_s.split('@').last.sub('>', '')
     end
