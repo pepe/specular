@@ -7,7 +7,7 @@ module Spine
 
       @negative_keyword = @assert_is == false ? 'NOT' : ''
 
-      ln = RUBY_ENGINE == 'rbx' ? 1 : 2
+      ln = RUBY_ENGINE == 'rbx' || (RUBY_ENGINE == 'jruby' && RUBY_VERSION.to_f == 1.9) ? 1 : 2
       @file, @line = caller[ln].split(/\:in\s+`/).first.scan(/(.*)\:(\d+)$/).flatten
       @task.__spine__source_files__[@file] ||= ::File.readlines(@file)
       @assertion = @task.__spine__source_files__[@file][@line.to_i-1].strip

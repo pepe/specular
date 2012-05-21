@@ -19,7 +19,6 @@ module SpineTest
         end
       end
       output = Spine.run(/skip_test_task/).to_s
-      puts output
       assert_match /Skipped Tasks.*skip_test_task_I at/m, output
       assert_match /Tasks\:\s+2 \(1 skipped\)$/, output
       assert_match /Tests\:\s+4$/, output

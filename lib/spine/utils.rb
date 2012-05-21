@@ -2,7 +2,7 @@ module Spine
   module Utils
 
     def proc_source proc
-      proc.to_s.split('@').last
+      proc.to_s.split('@').last.sub('>', '')
     end
 
     module Colorize
