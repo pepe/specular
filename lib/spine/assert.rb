@@ -7,7 +7,8 @@ module Spine
 
       @negative_keyword = @assert_is == false ? 'NOT' : ''
 
-      @file, @line = caller[2].split(/\:in\s+`/).first.scan(/(.*)\:(\d+)$/).flatten
+      ln = RUBY_ENGINE == 'rbx' ? 1 : 2
+      @file, @line = caller[ln].split(/\:in\s+`/).first.scan(/(.*)\:(\d+)$/).flatten
       @task.__spine__source_files__[@file] ||= ::File.readlines(@file)
       @assertion = @task.__spine__source_files__[@file][@line.to_i-1].strip
 
@@ -129,7 +130,7 @@ module Spine
       @task.__spine__output__ @assertion, :alert
 
       # any assertion marked as failed until it is explicitly passed
-      @task.passed? false
+      passed = false
 
       begin
 
@@ -138,7 +139,7 @@ module Spine
 
         if @assert_is == true ? result : [false, nil].include?(result)
           # marking the assertion as passed
-          @task.passed? true
+          passed = true
           @task.__spine__output__.success '- passed'
         end
 
@@ -146,7 +147,7 @@ module Spine
         error[:exception] = e
       end
 
-      @task.passed? || failed(error)
+      passed || failed(error)
     end
 
     def failed error = {}

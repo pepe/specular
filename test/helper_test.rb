@@ -18,7 +18,7 @@ module SpineTest
 
         self.respond_to?(:some_helper) && o(some_helper)
         does('Captain Jack').looks_like_jack?
-        passed? && o('looks_like_jack? passed')
+        o 'looks_like_jack? passed'
       end
       output = Spine.run(__method__).output.to_s
       assert_match /include test passed/, output
@@ -40,7 +40,7 @@ module SpineTest
         pizza = 'Big Pizza with Olives and lot of Cheese'
         does(pizza).contain? 'Olives'
         does(pizza).contain? 'Cheese'
-        passed? && o('Oh, seems we got a delicious pizza!')
+        o 'Oh, seems we got a delicious pizza!'
       end
       output = Spine.run(__method__).output.to_s
       assert_match /def test passed/, output

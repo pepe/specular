@@ -5,7 +5,7 @@ module SpineTest
       msg = 'raise test passed'
       Spine.task __method__ do
         does { some code }.raise_error?
-        passed? && o(msg)
+        o msg
       end
       assert_match /#{msg}/, Spine.run(__method__).output.to_s
     end
@@ -14,7 +14,7 @@ module SpineTest
       msg = 'raise NoMethodError test passed'
       Spine.task __method__ do
         does { raise NoMethodError }.raise_error? NoMethodError
-        passed? && o(msg)
+        o msg
       end
       assert_match /#{msg}/, Spine.run(__method__).output.to_s
     end
@@ -23,7 +23,7 @@ module SpineTest
       msg = 'raise match test passed'
       Spine.task __method__ do
         does { raise 'some error message' }.raise_error? /some error message/
-        passed? && o(msg)
+        o msg
       end
       assert_match /#{msg}/, Spine.run(__method__).output.to_s
     end
@@ -32,7 +32,7 @@ module SpineTest
       msg = 'raise type and match test passed'
       Spine.task __method__ do
         does { raise RuntimeError, 'some error message' }.raise_error? RuntimeError, /some error message/
-        passed? && o(msg)
+        o msg
       end
       assert_match /#{msg}/, Spine.run(__method__).output.to_s
     end

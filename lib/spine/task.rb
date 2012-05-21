@@ -17,7 +17,7 @@ module Spine
             :output => output, :source_files => {},
             :current_task => {:name => name, :proc => proc}, :skipped_tasks => {},
             :current_test => nil, :total_tests => 0, :skipped_tests => {},
-            :assertion_passed => true, :total_assertions => 0, :failed_assertions => {},
+            :total_assertions => 0, :failed_assertions => {},
             :hooks => {:a => [], :z => []}, :browser => nil
         }
         @__spine__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
@@ -108,15 +108,6 @@ module Spine
 
       alias d o
 
-      def passed? *args
-        @__spine__vars_pool__.assertion_passed = args.first if args.size > 0
-        @__spine__vars_pool__.assertion_passed
-      end
-
-      def failed?
-        !passed?
-      end
-
       # blocks to be executed before/after each test.
       #
       # please note that in case of nested tests,
@@ -167,7 +158,6 @@ module Spine
         end
       end
 
-
       def __spine__total_assertions__ op = nil
         @__spine__vars_pool__.total_assertions += 1 if op == :+
         @__spine__vars_pool__.total_assertions
@@ -189,12 +179,13 @@ module Spine
 
     module SpineTestMixin
 
-      [:Spec, :Describe,
+      [:Should,
+       :Spec, :Describe,
        :Test, :Testing,
        :Given, :When, :Then,
        :It, :He, :She,
        :If, :Let, :Say, :Assume, :Suppose,
-       :And, :Or, :Nor, :But, :However, :Should].each do |prefix|
+       :And, :Or, :Nor, :But, :However].each do |prefix|
         define_method prefix do |*args, &proc|
           __spine__define_test__ prefix, *args, &proc
         end

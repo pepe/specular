@@ -1,4 +1,6 @@
 
+[![Build Status](https://secure.travis-ci.org/slivu/spine.png)](http://travis-ci.org/slivu/spine)
+
 <blockquote>
 <strong>"Would you rather Test-First or Debug-Later?"</strong>
 </blockquote>
@@ -11,10 +13,10 @@
 
 ### Motivation
 
-*   I do not want to learn how to test. I simply want to ask Ruby: is foo == bar, or does foo respond to bar etc.
+*   I do not want to learn how to test. I simply want to ask Ruby: is `foo == bar`, or does `foo` respond to `bar` etc.
 *   No monkey patching. I need tested objects and Ruby classes to stay pristine.
-*   Occasionally, i need to write code and tests simultaneously, on same page, keeping the visual contact.
-    I can later move tests to right place, but when writing code i need to have tests nearby, cause switching files leads to attention disruption.
+*   Occasionally, i need to write code and run tests simultaneously, on same page, keeping the visual contact.
+    I can later move tests to right place, but when writing code i need to have running tests nearby, cause switching files leads to attention disruption.
 *   I need verbose, granular and manageable output.
 
 ### Getting Started
@@ -32,12 +34,12 @@
 ```ruby
 class Controller
 
-    # writing action
+    # action
     def buy product
-        # render action
+        # ...
     end
 
-    # writing tests
+    # tests
     Spine.task :buy do
 
         product = Model::Product.first
@@ -48,7 +50,7 @@ class Controller
 
             is?( response.status ) == 200
 
-            He 'should see the order details' do
+            Then 'user should see the order details' do
 
                 does?( response.body ) =~ /order details/
 
@@ -83,6 +85,7 @@ or just `Spine.run` to run all defined tasks.
 class TestedClass
 
     # define methods
+    # ...
 
     Spine.task :test_integers do
         # test your methods
@@ -112,8 +115,8 @@ Spine.run :test_integers
 To skip a task, set :skip option to true:
 
 ```ruby
-Spine.task :some_task, skip: true do
-    # tests here will not be executed
+Spine.task :some_task, :skip => true do
+    # tests here will not run
 end
 ```
 
@@ -127,58 +130,10 @@ Spine.task NewsController, NewsModel, :status => 1 do |controller, model, filter
 end
 ```
 
-Specs
----
-
-Used when you need to define multiple tests within same context.
-
-First argument is required and should contain spec name/description.<br/>
-Second argument are optional and may contain a hash of options.
-
-```ruby
-Spine.task do
-
-    Spec 'Testing links' do
-      # some logic
-    end
-
-    Spec 'Testing banners' do
-      # some logic
-    end
-end
-```
-
-Specs can be nested:
-
-```ruby
-Spec 'Testing links' do
-
-  Spec 'outgoing links' do
-    # some logic
-  end
-
-  Spec 'internal links' do
-    # some logic
-  end
-end
-```
-
-Specs can be defined only inside tasks.
-
-To skip a spec, set :skip option to true:
-
-```ruby
-Spec 'Skipping for now', skip: true do
-  # tests here will not be executed
-end
-```
-
 Tests
 ---
 
 Defining a test is as easy as think about it.
-
-Tests can be defined inside specs or directly inside tasks.
 
 ```ruby
 Spine.task do
@@ -193,19 +148,12 @@ Spine.task do
 end
 ```
 
-```ruby
-Spine.task do
-
-    Testing :UI do
-        # some logic and assertions
-    end
-end
-```
+Tests can be unlimitedly nested.
 
 ```ruby
 Spine.task do
 
-    Spec 'Testing theory of relativity' do
+    Describe 'Testing theory of relativity' do
 
         Suppose "I'm Superman" do
             And "I can fly" do
@@ -220,21 +168,21 @@ Spine.task do
 end
 ```
 
-Tests uses capitalized names and should have a name/description passed as first argument.<br/>
-As per specs, consequent arguments are optional and may contain a hash of options.
+Tests uses capitalized names and should have a name/description passed as first argument.
 
 Aliases:
 
 `Test`, `Testing`, `Given`, `When`, `Then`, `It`, `If`, `Let`,
-`Say`, `Assume`, `Suppose`, `And`, `Or`, `Nor`, `But`, `However`, `Should`
+`Say`, `Assume`, `Suppose`, `And`, `Or`, `Nor`, `But`, `However`,
+`Should`, `Describe`, `Spec`
 
 Something missing? Please advise.
 
 To skip a test, set :skip option to true:
 
 ```ruby
-Given 'user clicked register', skip: true do
-    # tests here will not be executed
+Given 'user clicked register', :skip => true do
+    # tests here will not run
 end
 ```
 
@@ -267,7 +215,7 @@ Looks nice and grammatically correctly.
 
 However, the main virtue is that tested objects are kept pristine!<br/>
 They are just compared to expected value without being hacked and injected with various unneeded artifacts.<br/>
-No more steroids! Ruby is powerful enough!
+**No more steroids! Ruby is powerful enough!**
 
 Here is a live example:
 
@@ -496,7 +444,7 @@ Spine.task do
 end
 ```
 
-Also helpers can be declared directly inside tasks:
+Also helpers can be defined directly inside tasks:
 
 
 ```ruby
@@ -537,7 +485,7 @@ Spine.task do
 end
 ```
 
-Hooks declared inside spec will run only for tests inside given spec:
+Hooks declared inside a test/context will run only for tests inside given test/context:
 
 ```ruby
 Spine.task do
@@ -552,14 +500,12 @@ Spine.task do
         @page.destroy
       end
 
-      # this hooks will be executed only by tests inside current spec and ignored on other specs.
+      # this hooks will be executed only by tests inside current context and ignored on tests outside it.
     end
 end
 ```
 
-Hooks can not be be defined inside tests. That makes no sense.
-
-Worth to note that in case of nested specs/tests,
+Worth to note that in case of nested tests,
 children will override variables set by parents:
 
 ```ruby
@@ -584,22 +530,6 @@ Spine.task do
 end
 ```
 
-Last test status
----
-
-*   `passed?` - returns true if last test passed
-*   `failed?` - returns true if last test failed
-
-```ruby
-is?(1) == 1
-passed? # true
-failed? # false
-
-is?(1) == 0
-passed? # false
-failed? # true
-```
-
 Output
 ---
 
@@ -609,20 +539,12 @@ Output
 ```ruby
 Spec 'Creating new account' do
 
-  data = {name: rand, email: rand}
-  o 'sending request ...'
+    data = {name: rand, email: rand}
+    o 'sending request ...'
 
-  result = post '/', data
-  is?(result.body) == 'success'
-
-  if passed?
+    result = post '/', data
+    is?(result.body) == 'success'
     o.success 'account created!'
-  end
-
-  if failed?
-    o.error 'was unable to create account'
-    o.warn 'sent data: %s' % data
-  end
 end
 ```
 
@@ -634,7 +556,11 @@ First of all you have to install `spine`
 
     $ gem install spine
 
-Then simply require it in your application and run defined tasks:
+If you also need HTTP functionality please install spine-http gem.<br/>
+It will let you use `get`, `post`, `visit` etc.<br/>
+[More details on spine-http](https://github.com/slivu/spine-http)
+
+Then simply require spine in your application and run defined tasks:
 
 ```ruby
 require 'spine'
@@ -690,31 +616,31 @@ puts Spine.run /^Forum/
 
 Results can also be printed separately:
 
-*    `passed?`  - returns true if all tests passed
-*    `failed?`  - returns true if at least one test failed
-*    `failed`   - failed tests amount
-*    `failures` - details about failed tests
-*    `output`   - details about testing process
-*    `summary`
-*    `skipped_tasks`
-*    `skipped_specs`
-*    `skipped_tests`
+*   `passed?`     - returns true if all tests passed
+*   `failed?`     - returns true if at least one test failed
+*   `failed`      - failed tests amount
+*   `failures`    - details about failed tests
+*   `output`      - details about testing process
+*   `summary`
+*   `skipped_tasks`
+*   `skipped_tests`
+*   `exit code`    - 0 on success, 1 on failures
 
 ```ruby
-specs = Spine.run
+tests = Spine.run
 
-if specs.passed?
-  puts specs.summary
+if tests.passed?
+  puts tests.summary
 else
-  puts specs.output
-  puts specs.failures
+  puts tests.output
+  puts tests.failures
 end
 
-if specs.skipped_specs.size > 0
-  puts specs.skipped_specs
+if tests.skipped_tests.size > 0
+  puts tests.skipped_tests
 end
 
-if specs.skipped_tests.size > 0
-  puts specs.skipped_tests
+if tests.skipped_tests.size > 0
+  puts tests.skipped_tests
 end
 ```
