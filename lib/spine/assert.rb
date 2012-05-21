@@ -8,10 +8,10 @@ module Spine
       @negative_keyword = @assert_is == false ? 'NOT' : ''
 
       @file, @line = caller[2].split(/\:in\s+`/).first.scan(/(.*)\:(\d+)$/).flatten
-      @task.spine__source_files[@file] ||= ::File.readlines(@file)
-      @assertion = @task.spine__source_files[@file][@line.to_i-1].strip
+      @task.__spine__source_files__[@file] ||= ::File.readlines(@file)
+      @assertion = @task.__spine__source_files__[@file][@line.to_i-1].strip
 
-      @task.spine__total_assertions :+
+      @task.__spine__total_assertions__ :+
     end
 
     def object
@@ -124,13 +124,9 @@ module Spine
 
     def evaluate error = {}, &proc
 
-      return if @task.spine__context_skipped?
+      return if @task.__spine__context_skipped?
 
-      @task.spine__output @assertion, :alert
-
-      if @task.spine__failures?
-        return @task.spine__output ' - assertion skipped due to previous failures', :warn
-      end
+      @task.__spine__output__ @assertion, :alert
 
       # any assertion marked as failed until it is explicitly passed
       @task.passed? false
@@ -143,7 +139,7 @@ module Spine
         if @assert_is == true ? result : [false, nil].include?(result)
           # marking the assertion as passed
           @task.passed? true
-          @task.spine__output.success '- passed'
+          @task.__spine__output__.success '- passed'
         end
 
       rescue => e
@@ -154,9 +150,9 @@ module Spine
     end
 
     def failed error = {}
-      @task.spine__failed_assertions @assertion, error.update(:object => object, :source => [@file, @line].join(':'))
-      @task.spine__output '- failed', :error
-      throw @task.spine__halting_symbol
+      @task.__spine__failed_assertions__ @assertion, error.update(:object => object, :source => [@file, @line].join(':'))
+      @task.__spine__output__ '- failed', :error
+      throw @task.__spine__halting_symbol__
     end
 
   end

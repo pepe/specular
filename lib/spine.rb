@@ -25,7 +25,7 @@ module Spine
       tasks = args.size > 0 ?
           tasks().select { |t| args.select { |a| t=t.first.first.to_s; a.is_a?(Regexp) ? t =~ a : t == a.to_s }.size > 0 } :
           tasks()
-      Spine::Frontend.new(tasks, @opts).run
+      ::Spine::Frontend.new(tasks, @opts).run
     end
 
     private
@@ -33,11 +33,7 @@ module Spine
   end
 end
 
-lib = File.expand_path('../spine', __FILE__) << '/'
-
-%w[
-utils
-assert
-task/*
-frontend
-].each { |r| Dir[lib + r + '.rb'].each { |f| require f } }
+require 'spine/utils'
+require 'spine/assert'
+require 'spine/task'
+require 'spine/frontend'

@@ -21,35 +21,9 @@ module SpineTest
       output = Spine.run(/skip_test_task/).to_s
       assert_match /Skipped Tasks.*skip_test_task_I at/m, output
       assert_match /Tasks\:\s+2 \(1 skipped\)$/, output
-      assert_match /Specs\:\s+2$/, output
-      assert_match /Tests\:\s+2$/, output
+      assert_match /Tests\:\s+4$/, output
       assert_match /Assertions\:\s+|\[2$/, output
       assert_match /Should be executed/, output
-      assert_match /is\(2\) == 2/, output
-      refute_match /is\(1\) == 1/, output
-      refute_match /should not be executed/i, output
-    end
-
-    def test_spec
-      Spine.task __method__ do
-        Spec :should_be_skipped, :skip => true do
-
-          is(1) == 1
-
-          Should 'not be executed' do
-          end
-        end
-        Spec 'should be executed' do
-          is(2) == 2
-        end
-      end
-      output = Spine.run(__method__).to_s
-      assert_match /Skipped Specs.*should_be_skipped at/m, output
-      assert_match /Tasks\:\s+1$/, output
-      assert_match /Specs\:\s+2 \(1 skipped\)$/, output
-      assert_match /Tests\:\s+1$/, output
-      assert_match /Assertions\:\s+|\[2$/, output
-      assert_match /should be executed/, output
       assert_match /is\(2\) == 2/, output
       refute_match /is\(1\) == 1/, output
       refute_match /should not be executed/i, output

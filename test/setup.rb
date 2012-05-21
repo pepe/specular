@@ -1,3 +1,5 @@
 require 'rubygems'
 require 'minitest/autorun'
-require ::File.expand_path '../../lib/spine', __FILE__
+
+$:.unshift ::File.expand_path '../../lib', __FILE__
+require 'spine'

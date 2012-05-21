@@ -7,7 +7,6 @@ module Spine
       @tasks, @opts = tasks, opts
       @output = []
       @skipped_tasks = {}
-      @total_specs, @skipped_specs = 0, {}
       @total_tests, @skipped_tests = 0, {}
       @total_assertions, @failed_assertions = 0, {}
     end
@@ -19,18 +18,15 @@ module Spine
         task_class = Class.new { include ::Spine::Task }
         task_instance = task_class.new *task_args, &task_proc
 
-        @output.concat task_instance.spine__output
+        @output.concat task_instance.__spine__output__
 
-        @skipped_tasks.update task_instance.spine__skipped_tasks
+        @skipped_tasks.update task_instance.__spine__skipped_tasks__
 
-        @total_specs += task_instance.spine__total_specs
-        @skipped_specs.update task_instance.spine__skipped_specs
+        @total_tests += task_instance.__spine__total_tests__
+        @skipped_tests.update task_instance.__spine__skipped_tests__
 
-        @total_tests += task_instance.spine__total_tests
-        @skipped_tests.update task_instance.spine__skipped_tests
-
-        @total_assertions += task_instance.spine__total_assertions
-        @failed_assertions.update task_instance.spine__failed_assertions
+        @total_assertions += task_instance.__spine__total_assertions__
+        @failed_assertions.update task_instance.__spine__failed_assertions__
       end
       self
     end
@@ -68,18 +64,6 @@ module Spine
       stdout
     end
 
-    def skipped_specs
-      reset_stdout
-      return stdout unless @skipped_specs.size > 0
-      nl; stdout "--- Skipped Specs ---", 0, :alert
-      @skipped_specs.each_value do |s|
-        nl
-        stdout s[:task]
-        stdout '%s at %s' % [s[:name], proc_source(s[:proc])], 1
-      end
-      stdout
-    end
-
     def skipped_tests
       reset_stdout
       return stdout unless @skipped_tests.size > 0
@@ -87,7 +71,6 @@ module Spine
       @skipped_tests.each_value do |s|
         nl
         stdout s[:task]
-        stdout s[:spec], 1
         stdout '%s at %s' % [s[:name], proc_source(s[:proc])], s[:ident] - 1
       end
       stdout
@@ -101,11 +84,10 @@ module Spine
       nl
       @failed_assertions.each_value do |setup|
 
-        task, spec, test, assertion, error, ident = setup
+        task, test, assertion, error, ident = setup
 
         nl
         stdout task
-        stdout spec, 1
         stdout test, ident
         stdout [Colorize.alert(assertion), error[:source]].join(' at '), ident
 
@@ -144,14 +126,13 @@ module Spine
       reset_stdout
       nl; stdout '---'
       stdout 'Tasks:       %s%s' % [@tasks.size, @skipped_tasks.size > 0 ? ' (%s skipped)' % @skipped_tasks.size : '']
-      stdout 'Specs:       %s%s' % [@total_specs, @skipped_specs.size > 0 ? ' (%s skipped)' % @skipped_specs.size : '']
       stdout 'Tests:       %s%s' % [@total_tests, @skipped_tests.size > 0 ? ' (%s skipped)' % @skipped_tests.size : '']
       stdout 'Assertions:  %s%s' % [@total_assertions, passed? ? '' : ' (%s failed)' % failed], 0, passed? ? :success : :error
       stdout
     end
 
     def to_s
-      (output + skipped_tasks + skipped_specs + skipped_tests + failures + summary).join("\n")
+      (output + skipped_tasks + skipped_tests + failures + summary).join("\n")
     end
 
     private
