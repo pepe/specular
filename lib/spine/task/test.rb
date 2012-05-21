@@ -21,11 +21,11 @@ module Spine
       spine__nesting_level :+
 
       prev_test = spine__current_test
-      spine__current_test name: name,
-                          proc: proc,
-                          task: (spine__current_task||{})[:name],
-                          spec: (spine__current_spec||{})[:name],
-                          ident: spine__nesting_level
+      spine__current_test :name => name,
+                          :proc => proc,
+                          :task => (spine__current_task||{})[:name],
+                          :spec => (spine__current_spec||{})[:name],
+                          :ident => spine__nesting_level
 
       spine__context << proc
 

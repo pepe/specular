@@ -2,7 +2,7 @@ module Spine
   module Utils
 
     def proc_source proc
-      proc.source_location.join(':')
+      proc.to_s.split('@').last
     end
 
     module Colorize

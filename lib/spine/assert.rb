@@ -36,7 +36,7 @@ module Spine
         :private_method_defined?, :protected_method_defined?, :public_method_defined?,
     ].each do |method|
       define_method method do |*expected|
-        evaluate(proxy: @proxy, method: method, expected: expected) { object.send(method, *expected.compact) }
+        evaluate(:proxy => @proxy, :method => method, :expected => expected) { object.send(method, *expected.compact) }
       end
     end
 
@@ -62,7 +62,7 @@ module Spine
         message = ('%s expected raised error to match "%s"' % [@negative_keyword, match])
         proc = lambda { is_a_exception_matching }
       end
-      evaluate message: message, &proc
+      evaluate(:message => message, &proc)
     end
 
     alias raise? raise_error
@@ -72,7 +72,7 @@ module Spine
 
     def throw_symbol symbol = nil, value = nil
 
-      return failed message: '#throw_symbol works only with procs' unless @proc
+      return failed(:message => '#throw_symbol works only with procs') unless @proc
 
       caught_symbol, caught_value = nil, nil
       begin
@@ -80,18 +80,20 @@ module Spine
           begin
             caught_value = catch(symbol) { @task.instance_exec(&@proc) }
           rescue => e
-            return failed exception: e
+            return failed(:exception => e)
           end
         end
         @task.instance_exec(&@proc)
-      rescue ArgumentError => e
-        prefix, caught_symbol = e.message.scan(/uncaught throw (\:|"|')(.*)/).flatten
-        if prefix && caught_symbol
-          if prefix == ':'
+      rescue => e
+        prefix, caught_symbol = e.message.scan(/uncaught throw (\:|"|'|`)(.*)/).flatten
+        case prefix
+          when ':'
+            caught_symbol = caught_symbol.to_sym
+          when '`' # ruby 1.8
+            caught_symbol = caught_symbol.sub(/'\Z/, '')
             caught_symbol = caught_symbol.to_sym
           else
-            caught_symbol = caught_symbol.sub(prefix, '')
-          end
+            caught_symbol = caught_symbol.sub(/#{prefix}$/, '')
         end
       end
 
@@ -106,7 +108,7 @@ module Spine
             [@negative_keyword, symbol, symbol.class, caught_symbol, caught_symbol.class]
         proc = lambda { symbol == caught_symbol }
       end
-      evaluate message: message, &proc
+      evaluate(:message => message, &proc)
     end
 
     alias throw? throw_symbol
@@ -115,7 +117,7 @@ module Spine
     alias to_throw_symbol throw_symbol
 
     def method_missing meth, *args
-      evaluate(message: 'failed') { @task.send meth, object, *args }
+      evaluate(:message => 'failed') { @task.send meth, object, *args }
     end
 
     private
@@ -152,7 +154,7 @@ module Spine
     end
 
     def failed error = {}
-      @task.spine__failed_assertions @assertion, error.update(object: object, source: [@file, @line].join(':'))
+      @task.spine__failed_assertions @assertion, error.update(:object => object, :source => [@file, @line].join(':'))
       @task.spine__output '- failed', :error
       throw @task.spine__halting_symbol
     end

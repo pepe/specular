@@ -7,7 +7,8 @@ module SpineTest
         does { throw :something }.throw_symbol?
         passed? && o(msg)
       end
-      assert_match /#{msg}/, Spine.run(__method__).output.to_s
+      tests = Spine.run(__method__)
+      assert_match /#{msg}/, tests.output.to_s
     end
 
     def test_symbol
@@ -25,7 +26,9 @@ module SpineTest
         does { throw :something, 'some message' }.throw_symbol? :something, 'some message'
         passed? && o(msg)
       end
-      assert_match /#{msg}/, Spine.run(__method__).output.to_s
+      tests = Spine.run(__method__)
+      puts tests.failures
+      assert_match /#{msg}/, tests.output.to_s
     end
 
     def test_symbol_and_regex_value

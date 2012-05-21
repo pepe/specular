@@ -1,6 +1,29 @@
 module Spine
   module Task
 
+    class OutputProxy < Array
+      attr_reader :host
+
+      def initialize host
+        @host = host
+      end
+
+      [:info, :success, :warn, :alert, :error].each do |meth|
+        define_method meth do |snippet|
+          return if host.spine__context_skipped?
+          self << [snippet.to_s, host.spine__nesting_level, __method__]
+        end
+      end
+
+      define_method :last_error do
+        self.error host.spine__last_error[:message]
+      end
+
+      def br
+        self << ['']
+      end
+    end
+
     def initialize *args, &proc
 
       proc || raise('--- tasks need a proc to run ---')
@@ -8,29 +31,16 @@ module Spine
       opts = args.last.is_a?(Hash) ? args.pop : {}
       name = args.first
 
-      output, task = [], self
-      [:info, :success, :warn, :alert, :error].each do |meth|
-        output.define_singleton_method meth do |snippet|
-          return if task.spine__context_skipped?
-          self << [snippet.to_s, task.spine__nesting_level, __method__]
-        end
-      end
-      output.define_singleton_method :last_error do
-        self.error task.spine__last_error[:message]
-      end
-
-      def output.br
-        self << ['']
-      end
+      output = OutputProxy.new self
 
       vars = {
-          nesting_level: 0, context: [],
-          output: output, source_files: {},
-          current_task: {name: name, proc: proc}, skipped_tasks: {},
-          current_spec: nil, total_specs: 0, skipped_specs: {},
-          current_test: nil, total_tests: 0, skipped_tests: {},
-          assertion_passed: true, total_assertions: 0, failed_assertions: {},
-          hooks: {a: {}, z: {}}, browser: nil
+          :nesting_level => 0, :context => [],
+          :output => output, :source_files => {},
+          :current_task => {:name => name, :proc => proc}, :skipped_tasks => {},
+          :current_spec => nil, :total_specs => 0, :skipped_specs => {},
+          :current_test => nil, :total_tests => 0, :skipped_tests => {},
+          :assertion_passed => true, :total_assertions => 0, :failed_assertions => {},
+          :hooks => {:a => [], :z => []}, :browser => nil
       }
       @__spine__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
 

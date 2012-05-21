@@ -31,16 +31,17 @@ module Spine
     #
     def before &proc
       raise('--- hooks can not be defined inside tests ---') if spine__current_test
-      @__spine__vars_pool__.hooks[:a][spine__context.dup] = proc
+      @__spine__vars_pool__.hooks[:a] <<  [spine__context.dup, proc]
     end
 
     def after &proc
       raise('--- hooks can not be defined inside tests ---') if spine__current_test
-      @__spine__vars_pool__.hooks[:z][spine__context.dup] = proc
+      @__spine__vars_pool__.hooks[:z] << [spine__context.dup, proc]
     end
 
     def spine__hooks position
-      @__spine__vars_pool__.hooks[position].map do |context, hook|
+      @__spine__vars_pool__.hooks[position].map do |map|
+        context, hook = map
         hook if spine__context[0, context.size] == context
       end.compact
     end

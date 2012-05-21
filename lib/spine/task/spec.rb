@@ -9,9 +9,9 @@ module Spine
       spine__nesting_level :+
 
       prev_spec = spine__current_spec
-      spine__current_spec name: name,
-                          proc: proc,
-                          task: (spine__current_task||{})[:name]
+      spine__current_spec :name => name,
+                          :proc => proc,
+                          :task => (spine__current_task||{})[:name]
 
       spine__context << proc
 

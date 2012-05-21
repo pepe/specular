@@ -2,14 +2,14 @@ module Spine
   module Task
 
     [:is, :is?, :are, :are?, :does, :does?, :expect, :assert, :check].each do |meth|
-      define_method meth do |object = nil, &proc|
-        ::Spine::Assert.new true, self, __method__, object, &proc
+      define_method meth do |*args, &proc|
+        ::Spine::Assert.new(true, self, __method__, args.first, &proc)
       end
     end
 
     [:refute, :false?].each do |meth|
-      define_method meth do |object = nil, &proc|
-        ::Spine::Assert.new false, self, __method__, object, &proc
+      define_method meth do |*args, &proc|
+        ::Spine::Assert.new(false, self, __method__, args.first, &proc)
       end
     end
 

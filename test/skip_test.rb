@@ -2,7 +2,7 @@ module SpineTest
   class SkipTest < MiniTest::Unit::TestCase
 
     def test_task
-      Spine.task :skip_test_task_I, skip: true do
+      Spine.task :skip_test_task_I, :skip => true do
         Spec 'should not be executed' do
 
           is(1) == 1
@@ -32,7 +32,7 @@ module SpineTest
 
     def test_spec
       Spine.task __method__ do
-        Spec :should_be_skipped, skip: true do
+        Spec :should_be_skipped, :skip => true do
 
           is(1) == 1
 
@@ -57,7 +57,7 @@ module SpineTest
 
     def test_test
       Spine.task __method__ do
-        Should 'be skipped', skip: true do
+        Should 'be skipped', :skip => true do
 
           is(1) == 1
 

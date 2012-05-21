@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.summary = 'spine-%s' % Spine::VERSION
   s.description = 'Inline specs for your unit tests'
 
-  s.required_ruby_version = '>= 1.9.2'
+  s.required_ruby_version = '>= 1.8.7'
 
   s.require_paths = ['lib']
   s.files = `git ls-files`.split("\n")
