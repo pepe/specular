@@ -1,14 +1,15 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path '../lib/spine/version', __FILE__
+
+version = '0.2.0'
 
 Gem::Specification.new do |s|
 
   s.name = 'spine'
-  s.version = Spine::VERSION
+  s.version = version
   s.authors = ['Silviu Rusu']
   s.email = ['slivuz@gmail.com']
   s.homepage = 'https://github.com/slivu/spine'
-  s.summary = 'spine-%s' % Spine::VERSION
+  s.summary = 'spine-%s' % version
   s.description = 'Inline specs for your unit tests'
 
   s.required_ruby_version = '>= 1.8.7'
