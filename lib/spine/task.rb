@@ -60,10 +60,6 @@ module Spine
         (__spine__failed_assertions__.values.last || [])[4] || {}
       end
 
-      def __spine__skip_symbol__
-        ('__spine__skip_symbol__%s__' % __spine__context__.dup.last).to_sym
-      end
-
       def __spine__fail_symbol__
         ('__spine__fail_symbol__%s__' % __spine__context__.dup.last).to_sym
       end
