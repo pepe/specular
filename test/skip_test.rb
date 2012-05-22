@@ -45,6 +45,9 @@ module SpineTest
               end
             end
           end
+          Should 'run' do
+            does?('run') =~ /r/
+          end
         end
         Should 'be skipped conditionally', :skip => proc { true } do
 
@@ -59,10 +62,11 @@ module SpineTest
       end
       output = Spine.run(__method__).to_s
       assert_match /Skipped Tests.*#{__method__}.*Should be skipped at/m, output
-      assert_match /Tests\:\s+3 \(2 skipped\)/, output
+      assert_match /Tests\:\s+4 \(2 skipped\)/, output
       assert_match /Should be executed/, output
       assert_match /And this as well/, output
       assert_match /Assertions\:\s+|\[2$/, output
+      assert_match /#{Regexp.escape "does?('run') =~ /r/"}/, output
       refute_match /is\(11\) == 1/, output
       refute_match /is\(1\) == 1/, output
       refute_match /Should not be executed/, output
