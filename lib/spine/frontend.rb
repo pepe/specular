@@ -95,7 +95,7 @@ module Spine
           stdout exception.message, ident, :error
           if backtrace = exception.backtrace
             if @opts[:trace]
-              backtrace.each { |s| stdout s, ident, :w }
+              backtrace.each { |s| stdout s, ident }
             else
               backtrace_alert = true
             end
@@ -107,7 +107,7 @@ module Spine
                   Colorize.warn(error[:proxy]),
                   presenter__expected_vs_received(error[:object]),
                   Colorize.warn(error[:method]),
-                  presenter__expected_vs_received((error[:expected]||[]).compact.join(', '))
+                  presenter__expected_vs_received(*error[:expected])
               ]
           stdout message, ident
         end
@@ -158,8 +158,10 @@ module Spine
       (@stdout||reset_stdout) << (color ? Colorize.send(color, str) : str)
     end
 
-    def presenter__expected_vs_received obj
-      [NilClass, String, Symbol].include?(obj.class) ? obj.inspect : obj
+    def presenter__expected_vs_received *objects
+      objects.map do |obj|
+        [NilClass, String, Symbol].include?(obj.class) ? obj.inspect : obj
+      end.join(', ')
     end
 
   end

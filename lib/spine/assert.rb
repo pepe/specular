@@ -38,7 +38,7 @@ module Spine
         :private_method_defined?, :protected_method_defined?, :public_method_defined?,
     ].each do |method|
       define_method method do |*expected|
-        evaluate(:proxy => @proxy, :method => method, :expected => expected) { object.send(method, *expected.compact) }
+        evaluate(:proxy => @proxy, :method => method, :expected => expected) { object.send(method, *expected) }
       end
     end
 
