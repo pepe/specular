@@ -112,10 +112,19 @@ Spine.run /^test/
 Spine.run :test_integers
 ```
 
-To skip a task, set :skip option to true:
+To skip a task, use :skip option.<br/>
+If :skip is set to true, the task will always be skipped.
 
 ```ruby
 Spine.task :some_task, :skip => true do
+    # tests here will not run
+end
+```
+
+If :skip is a proc, the task will be skipped only if proc returns a positive value.
+
+```ruby
+Spine.task :some_task, :skip => proc { RUBY_VERSION.to_f == 1.8 } do
     # tests here will not run
 end
 ```

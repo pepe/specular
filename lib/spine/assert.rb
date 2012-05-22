@@ -126,8 +126,6 @@ module Spine
 
     def evaluate error = {}, &proc
 
-      return if @task.__spine__context_skipped?
-
       @task.__spine__output__ @assertion, :alert
 
       # any assertion marked as failed until it is explicitly passed

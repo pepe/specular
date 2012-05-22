@@ -6,8 +6,8 @@ module Spine
     def initialize tasks, opts = {}
       @tasks, @opts = tasks, opts
       @output = []
-      @skipped_tasks = {}
-      @total_tests, @skipped_tests = 0, {}
+      @skipped_tasks = []
+      @total_tests, @skipped_tests = 0, []
       @total_assertions, @failed_assertions = 0, {}
     end
 
@@ -20,10 +20,10 @@ module Spine
 
         @output.concat task_instance.__spine__output__
 
-        @skipped_tasks.update task_instance.__spine__skipped_tasks__
+        @skipped_tasks += task_instance.__spine__skipped_tasks__
 
         @total_tests += task_instance.__spine__total_tests__
-        @skipped_tests.update task_instance.__spine__skipped_tests__
+        @skipped_tests += task_instance.__spine__skipped_tests__
 
         @total_assertions += task_instance.__spine__total_assertions__
         @failed_assertions.update task_instance.__spine__failed_assertions__
@@ -57,7 +57,7 @@ module Spine
       reset_stdout
       return stdout unless @skipped_tasks.size > 0
       nl; stdout "--- Skipped Tasks ---", 0, :alert
-      @skipped_tasks.each_value do |t|
+      @skipped_tasks.each do |t|
         nl
         stdout '%s at %s' % [t[:name], proc_source(t[:proc])]
       end
@@ -68,10 +68,10 @@ module Spine
       reset_stdout
       return stdout unless @skipped_tests.size > 0
       nl; stdout "--- Skipped Tests ---", 0, :alert
-      @skipped_tests.each_value do |s|
+      @skipped_tests.each do |t|
         nl
-        stdout s[:task]
-        stdout '%s at %s' % [s[:name], proc_source(s[:proc])], s[:ident] - 1
+        stdout t[:task]
+        stdout '%s at %s' % [t[:name], proc_source(t[:proc])], t[:ident] - 1
       end
       stdout
     end
