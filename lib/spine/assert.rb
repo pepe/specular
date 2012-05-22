@@ -126,6 +126,7 @@ module Spine
 
     def evaluate error = {}, &proc
 
+      @task.__spine__nesting_level__ :+
       @task.__spine__output__ @assertion, :alert
 
       # any assertion marked as failed until it is explicitly passed
@@ -147,6 +148,7 @@ module Spine
       end
 
       passed || failed(error)
+      @task.__spine__nesting_level__ :-
     end
 
     def failed error = {}
