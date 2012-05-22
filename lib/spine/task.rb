@@ -180,7 +180,7 @@ module Spine
     module SpineTestMixin
 
       [:Should,
-       :Spec, :Describe,
+       :Spec, :Describe, :Context,
        :Test, :Testing,
        :Given, :When, :Then,
        :It, :He, :She,
@@ -191,10 +191,12 @@ module Spine
         end
       end
 
-      def __spine__define_test__ prefix, goal, opts = {}, &proc
+      def __spine__define_test__ prefix, *args, &proc
 
         proc || raise('--- tests need a proc to run ---')
 
+        opts = args.last.is_a?(Hash) ? args.pop : {}
+        goal = args.shift
         name = [prefix, goal].join(' ')
 
         prev_test = __spine__current_test__

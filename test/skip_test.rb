@@ -35,12 +35,14 @@ module SpineTest
 
     def test_test
       Spine.task __method__ do
-        Should 'be skipped', :skip => true do
+        Context do
+          Should 'be skipped', :skip => true do
 
-          is(1) == 1
+            is(1) == 1
 
-          Should 'not be executed' do
-            Nor 'this one' do
+            Should 'not be executed' do
+              Nor 'this one' do
+              end
             end
           end
         end
@@ -57,7 +59,7 @@ module SpineTest
       end
       output = Spine.run(__method__).to_s
       assert_match /Skipped Tests.*#{__method__}.*Should be skipped at/m, output
-      assert_match /Tests\:\s+2 \(2 skipped\)/, output
+      assert_match /Tests\:\s+3 \(2 skipped\)/, output
       assert_match /Should be executed/, output
       assert_match /And this as well/, output
       assert_match /Assertions\:\s+|\[2$/, output

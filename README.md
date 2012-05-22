@@ -183,7 +183,7 @@ Aliases:
 
 `Test`, `Testing`, `Given`, `When`, `Then`, `It`, `If`, `Let`,
 `Say`, `Assume`, `Suppose`, `And`, `Or`, `Nor`, `But`, `However`,
-`Should`, `Describe`, `Spec`
+`Should`, `Describe`, `Spec`, `Context`
 
 Something missing? Please advise.
 
