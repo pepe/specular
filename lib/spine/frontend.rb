@@ -154,7 +154,7 @@ module Spine
 
         return output
       end
-      str = [' '*(2*ident), chunk].join
+      str = [' '*(2* (ident > 0 ? ident : 0)), chunk].join
       (@stdout||reset_stdout) << (color ? Colorize.send(color, str) : str)
     end
 
