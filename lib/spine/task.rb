@@ -169,13 +169,13 @@ module Spine
 
     module SpineTestMixin
 
-      [:Should,
-       :Spec, :Describe, :Context,
+      [:Should, :Spec, :Describe, :Context,
        :Test, :Testing,
        :Given, :When, :Then,
        :It, :He, :She,
        :If, :Let, :Say, :Assume, :Suppose,
-       :And, :Or, :Nor, :But, :However].each do |prefix|
+       :And, :Or, :Nor, :But, :However,
+       :Via].each do |prefix|
         define_method prefix do |*args, &proc|
           __spine__define_test__ prefix, *args, &proc
         end
