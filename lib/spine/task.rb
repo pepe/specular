@@ -22,18 +22,17 @@ module Spine
         }
         @__spine__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
 
-        catch __spine__skip_symbol__ do
-
-          (skip = opts[:skip]) &&
-              (skip.is_a?(Proc) ? skip.call && __spine__skip_task! : __spine__skip_task!)
-
-          __spine__output__ ''
-          __spine__output__ name
-
-          catch __spine__fail_symbol__ do
-            self.instance_exec *args, &proc
-          end
+        if (skip = opts[:skip]) && (skip.is_a?(Proc) ? skip.call : true)
+          return __spine__skipped_tasks__ << __spine__current_task__
         end
+
+        __spine__output__ ''
+        __spine__output__ name
+
+        catch __spine__fail_symbol__ do
+          self.instance_exec *args, &proc
+        end
+
       end
 
       def __spine__output__ snippet = nil, color = nil
@@ -51,11 +50,6 @@ module Spine
 
       def __spine__skipped_tasks__
         __spine__.skipped_tasks
-      end
-
-      def __spine__skip_task!
-        __spine__skipped_tasks__ << __spine__current_task__
-        throw __spine__skip_symbol__
       end
 
       def __spine__source_files__
@@ -200,35 +194,33 @@ module Spine
         name = [prefix, goal].join(' ')
 
         prev_test = __spine__current_test__
-        __spine__current_test__ :name => name,
-                                :proc => proc,
-                                :task => (__spine__current_task__||{})[:name],
-                                :ident => __spine__nesting_level__
+        this_test = {:name => name, :proc => proc,
+                     :task => (__spine__current_task__||{})[:name],
+                     :ident => __spine__nesting_level__}
 
-        catch __spine__skip_symbol__ do
-
-          (skip = opts[:skip]) &&
-              (skip.is_a?(Proc) ? skip.call && __spine__skip_test! : __spine__skip_test!)
-
-          __spine__total_tests__ :+
-          __spine__nesting_level__ :+
-          __spine__context__ << proc
-          __spine__output__(name)
-
-          # executing :before hooks
-          __spine__hooks__(:a).each { |hook| self.instance_exec(goal, opts, &hook) }
-
-          catch __spine__fail_symbol__ do
-            self.instance_exec &proc
-          end
-
-          # executing :after hooks
-          __spine__hooks__(:z).each { |hook| self.instance_exec(goal, opts, &hook) }
-
-          __spine__context__.pop
-          __spine__nesting_level__ :-
-
+        if (skip = opts[:skip]) && (skip.is_a?(Proc) ? skip.call : true)
+          return __spine__skipped_tests__ << this_test
         end
+
+        __spine__current_test__ this_test
+        __spine__total_tests__ :+
+        __spine__nesting_level__ :+
+        __spine__context__ << proc
+        __spine__output__(name)
+
+        # executing :before hooks
+        __spine__hooks__(:a).each { |hook| self.instance_exec(goal, opts, &hook) }
+
+        catch __spine__fail_symbol__ do
+          self.instance_exec &proc
+        end
+
+        # executing :after hooks
+        __spine__hooks__(:z).each { |hook| self.instance_exec(goal, opts, &hook) }
+
+        __spine__context__.pop
+        __spine__nesting_level__ :-
+
         __spine__current_test__ prev_test
 
       end
@@ -245,11 +237,6 @@ module Spine
 
       def __spine__skipped_tests__
         __spine__.skipped_tests
-      end
-
-      def __spine__skip_test!
-        __spine__skipped_tests__ << __spine__current_test__
-        throw __spine__skip_symbol__
       end
 
     end
