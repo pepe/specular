@@ -1,11 +1,21 @@
 module Spine
   class Assert
 
-    def initialize assert_is, task, proxy, object = nil, &proc
-      @assert_is, @task, @proxy, @object, @proc =
-          assert_is, task, proxy, object, proc
+    ASSERTS = [
+        :==, :===, :eql?, :equal?, :=~, '!=', '!~',
+        :>, :>=, :<, :<=, :between?, :zero?,
+        :ascii_only?, :empty?, :start_with?, :end_with?, :frozen?, :include?,
+        :instance_of?, :is_a?, :kind_of?, :nil?, :respond_to?, :respond_to_missing?,
+        :tainted?, :untrusted?, :valid_encoding?,
+        :const_defined?, :instance_variable_defined?,
+        :private_method_defined?, :protected_method_defined?, :public_method_defined?,
+    ].freeze
 
-      @negative_keyword = @assert_is == false ? 'NOT' : ''
+    def initialize expect_true, task, proxy, object = nil, &proc
+      @expect_true, @task, @proxy, @object, @proc =
+          expect_true, task, proxy, object, proc
+
+      @negative_keyword = @expect_true ? '' : 'NOT'
 
       ruby_engine = ::Spine::Utils::RUBY_ENGINE
       ln = ruby_engine == 'rbx' || (ruby_engine == 'jruby' && RUBY_VERSION.to_f == 1.9) ? 1 : 2
@@ -28,17 +38,11 @@ module Spine
                          end
     end
 
-    [
-        :==, :===, :eql?, :equal?, :=~, '!=', '!~',
-        :>, :>=, :<, :<=, :between?, :zero?,
-        :ascii_only?, :empty?, :start_with?, :end_with?, :frozen?, :include?,
-        :instance_of?, :is_a?, :kind_of?, :nil?, :respond_to?, :respond_to_missing?,
-        :tainted?, :untrusted?, :valid_encoding?,
-        :const_defined?, :instance_variable_defined?,
-        :private_method_defined?, :protected_method_defined?, :public_method_defined?,
-    ].each do |method|
+    ASSERTS.each do |method|
       define_method method do |*expected|
-        evaluate(:proxy => @proxy, :method => method, :expected => expected) { object.send(method, *expected) }
+        evaluate(:proxy => @proxy, :method => method, :expected => expected, :negative => method.to_s =~ /!/) do
+          object.send method, *expected
+        end
       end
     end
 
@@ -124,8 +128,7 @@ module Spine
 
     private
 
-    def evaluate error = {}, &proc
-
+    def evaluate context = {}, &proc
       @task.__spine__nesting_level__ :+
       @task.__spine__output__ @assertion, :alert
 
@@ -134,20 +137,15 @@ module Spine
 
       begin
 
-        # evaluating assertion
-        result = proc.call
-
-        if @assert_is == true ? result : [false, nil].include?(result)
-          # marking the assertion as passed
-          passed = true
-          @task.__spine__output__.success '- passed'
-        end
+        result = proc.call # evaluating assertion
+        passed = (@expect_true ? result : !result)
+        passed && @task.__spine__output__.success('- passed')
 
       rescue => e
-        error[:exception] = e
+        context[:exception] = e
       end
 
-      passed || failed(error)
+      passed || failed(context)
       @task.__spine__nesting_level__ :-
     end
 
