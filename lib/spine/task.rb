@@ -205,14 +205,22 @@ module Spine
         __spine__output__(name)
 
         # executing :before hooks
-        __spine__hooks__(:a).each { |hook| self.instance_exec(goal, opts, &hook) }
+        execute_hooks = opts.has_key?(:hooks) ?
+            opts[:hooks] == :before :
+            true
+        execute_hooks &&
+            __spine__hooks__(:a).each { |hook| self.instance_exec(goal, opts, &hook) }
 
         catch __spine__fail_symbol__ do
           self.instance_exec &proc
         end
 
         # executing :after hooks
-        __spine__hooks__(:z).each { |hook| self.instance_exec(goal, opts, &hook) }
+        execute_hooks = opts.has_key?(:hooks) ?
+            opts[:hooks] == :after :
+            true
+        execute_hooks &&
+            __spine__hooks__(:z).each { |hook| self.instance_exec(goal, opts, &hook) }
 
         __spine__context__.pop
         __spine__nesting_level__ :-

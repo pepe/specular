@@ -539,6 +539,37 @@ Spine.task do
 end
 ```
 
+Hooks can also be executed selectively or disabled at all for each task in part.
+
+To disable all hooks, set :hooks option to `nil` or `false`:
+
+```ruby
+Spine.task self do
+
+    before do
+        @var, @val = 2.times.map { 5.times.map { ('a'..'z').to_a[rand(26)] }.join }
+        o 'clearing cookies...'
+        cookies.clear
+    end
+
+    Should 'fail - wrong path provided' do
+
+        get '/set', @var, :value => @val, :path => '/blah'
+
+        Should 'be persisted in jar', :hooks => nil do     # this test wont execute any hooks
+            is { cookies[@var]['/blah'].value } == @val
+        end
+        However 'not disposed via HTTP', :hooks => nil do  # this test wont execute any hooks
+            r = get '/get', @var
+            refute(r.body) == @val
+        end
+    end
+end
+```
+
+To execute only :before hooks, set :hooks option to :before.<br/>
+And to execute only :after hooks, set :hooks option to :after.<br/>
+
 Output
 ---
 

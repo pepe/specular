@@ -3,7 +3,8 @@ module SpineTest
 
     def test_hooks
 
-      expectations = [:task, :spec_1, :spec_1_context, :spec_1_1, :spec_2]
+      expectations = [:task, :spec_1, :spec_1_context, :spec_1_1, :spec_2,
+                      :ignore_all, :only_before, :only_after]
       expectations = Hash[expectations.zip expectations.map { 0 }]
 
       hooks = []
@@ -79,6 +80,24 @@ module SpineTest
           end
           hooks == [:task_A, :spec_2_A, :task_Z, :spec_2_Z] && expectations[:spec_2] += 1
         end
+
+        hooks = []
+        Spec :ignore_all, :hooks => nil do
+          hooks == [] && expectations[:ignore_all] += 1
+        end
+        hooks == [] && expectations[:ignore_all] += 1
+
+        hooks = []
+        Spec :only_before, :hooks => :before do
+          hooks == [:task_A] && expectations[:only_before] += 1
+        end
+        hooks == [:task_A] && expectations[:only_before] += 1
+
+        hooks = []
+        Spec :only_after, :hooks => :after do
+          hooks == [] && expectations[:only_after] += 1
+        end
+        hooks == [:task_Z] && expectations[:only_after] += 1
 
       end
       output = Spine.run __method__
