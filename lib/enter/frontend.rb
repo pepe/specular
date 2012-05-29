@@ -1,4 +1,4 @@
-module Spine
+module Enter
   class Frontend
 
     include Utils
@@ -15,7 +15,7 @@ module Spine
       @tasks.each do |task|
 
         task_args, task_proc = task
-        task_class = Class.new { include ::Spine::Task }
+        task_class = Class.new { include ::Enter::Task }
         task_instance = task_class.new *task_args, &task_proc
 
         @output.concat task_instance.__enter__output__

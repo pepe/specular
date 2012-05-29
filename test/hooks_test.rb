@@ -1,4 +1,4 @@
-module SpineTest
+module EnterTest
   class HooksTest < MiniTest::Unit::TestCase
 
     def test_hooks
@@ -8,7 +8,7 @@ module SpineTest
       expectations = Hash[expectations.zip expectations.map { 0 }]
 
       hooks = []
-      Spine.task __method__ do
+      Enter.task __method__ do
 
         before do
           hooks << :task_A
@@ -100,7 +100,7 @@ module SpineTest
         hooks == [:task_Z] && expectations[:only_after] += 1
 
       end
-      output = Spine.run __method__
+      output = Enter.run __method__
       puts output.failures if output.failed?
       expectations.each_pair do |expectation, value|
         assert_equal value, 2, 'expected %s to be 2 but it is %s' % [expectation, value.inspect]

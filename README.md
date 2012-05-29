@@ -40,7 +40,7 @@ class Controller
     end
 
     # tests
-    Spine.task :buy do
+    Enter.task :buy do
 
         product = Model::Product.first
 
@@ -65,7 +65,7 @@ class Controller
 end
 
 # running tests
-puts Spine.run
+puts Enter.run
 ```
 
 <hr/>
@@ -75,9 +75,9 @@ puts Spine.run
 Tasks
 ---
 
-Spine tasks can be defined anywhere in your code and executed anywhere too,
-by calling `Spine.run('task name')`,<br/>
-or just `Spine.run` to run all defined tasks.
+Enter tasks can be defined anywhere in your code and executed anywhere too,
+by calling `Enter.run('task name')`,<br/>
+or just `Enter.run` to run all defined tasks.
 
 ```ruby
 # Defining tasks:
@@ -87,15 +87,15 @@ class TestedClass
     # define methods
     # ...
 
-    Spine.task :test_integers do
+    Enter.task :test_integers do
         # test your methods
     end
 
-    Spine.task :test_strings do
+    Enter.task :test_strings do
         # test your methods
     end
 
-    Spine.task :yet_another_task do
+    Enter.task :yet_another_task do
         # test your methods
     end
 end
@@ -103,20 +103,20 @@ end
 # Running tasks:
 
 # run all tasks
-Spine.run
+Enter.run
 
 # run tasks starting with "test"
-Spine.run /^test/
+Enter.run /^test/
 
 # run only "test_integers" task
-Spine.run :test_integers
+Enter.run :test_integers
 ```
 
 To skip a task, use :skip option.<br/>
 If :skip is set to true, the task will always be skipped.
 
 ```ruby
-Spine.task :some_task, :skip => true do
+Enter.task :some_task, :skip => true do
     # tests here will not run
 end
 ```
@@ -124,7 +124,7 @@ end
 If :skip is a proc, the task will be skipped only if proc returns a positive value.
 
 ```ruby
-Spine.task :some_task, :skip => proc { RUBY_VERSION.to_f == 1.8 } do
+Enter.task :some_task, :skip => proc { RUBY_VERSION.to_f == 1.8 } do
     # tests here will not run
 end
 ```
@@ -133,7 +133,7 @@ All arguments passed to tasks are available as block parameters.<br/>
 Use convenient names to read them:
 
 ```ruby
-Spine.task NewsController, NewsModel, :status => 1 do |controller, model, filter|
+Enter.task NewsController, NewsModel, :status => 1 do |controller, model, filter|
   item = model.find filter
   action = controller.http.route action
 end
@@ -145,7 +145,7 @@ Tests
 Defining a test is as easy as think about it.
 
 ```ruby
-Spine.task do
+Enter.task do
 
     Test :Nr1 do
         # some logic and assertions
@@ -160,7 +160,7 @@ end
 Tests can be unlimitedly nested.
 
 ```ruby
-Spine.task do
+Enter.task do
 
     Describe 'Testing theory of relativity' do
 
@@ -246,7 +246,7 @@ class SomeClass
     end
   end
 
-  Spine.task 'SomeTask' do
+  Enter.task 'SomeTask' do
   
     Spec 'BasicTests' do
 
@@ -312,7 +312,7 @@ class SomeClass
   end
 end
 
-puts Spine.run
+puts Enter.run
 ```
 
 Running in terminal:
@@ -440,7 +440,7 @@ module SomeHelper
     end
 end
 
-Spine.task do
+Enter.task do
 
     include SomeModule
 
@@ -457,7 +457,7 @@ Also helpers can be defined directly inside tasks:
 
 
 ```ruby
-Spine.task do
+Enter.task do
 
     def between? val, min, max
         (min..max).include? val
@@ -480,7 +480,7 @@ Hooks
 Hooks defined at task level will be executed by all tests inside task:
 
 ```ruby
-Spine.task do
+Enter.task do
 
   before do
     @page = Model::Page.new
@@ -497,7 +497,7 @@ end
 Hooks declared inside a test/context will run only for tests inside given test/context:
 
 ```ruby
-Spine.task do
+Enter.task do
 
     Spec 'SomeSpec' do
 
@@ -518,7 +518,7 @@ Worth to note that in case of nested tests,
 children will override variables set by parents:
 
 ```ruby
-Spine.task do
+Enter.task do
 
   before do
     @n = 0
@@ -544,7 +544,7 @@ Hooks can also be executed selectively or disabled at all for each task in part.
 To disable all hooks, set :hooks option to `nil` or `false`:
 
 ```ruby
-Spine.task self do
+Enter.task self do
 
     before do
         @var, @val = 2.times.map { 5.times.map { ('a'..'z').to_a[rand(26)] }.join }
@@ -607,21 +607,21 @@ require 'enter'
 
 class App
 
-  Spine.task do
+  Enter.task do
       Spec 'SomeSpec' do
         # some logic
       end
   end
 end
 
-puts Spine.run
+puts Enter.run
 ```
 
 You can also run tasks separately:
 
 ```ruby
 class News
-    Spine.task News do
+    Enter.task News do
         # some logic
     end
 end
@@ -629,29 +629,29 @@ end
 module Forum
 
     class Members
-        Spine.task Forum::Members do
+        Enter.task Forum::Members do
             # some logic
         end
     end
 
     class Posts
-        Spine.task Forum::Posts do
+        Enter.task Forum::Posts do
             # some logic
         end
     end
 end
 
 # testing News Controller
-puts Spine.run News
+puts Enter.run News
 
 # testing Forum Members
-puts Spine.run Forum::Members
+puts Enter.run Forum::Members
 
 # testing Forum Posts
-puts Spine.run Forum::Posts
+puts Enter.run Forum::Posts
 
 # testing all Forum classes
-puts Spine.run /^Forum/
+puts Enter.run /^Forum/
 ```
 
 Results can also be printed separately:
@@ -667,7 +667,7 @@ Results can also be printed separately:
 *   `exit code`    - 0 on success, 1 on failures
 
 ```ruby
-tests = Spine.run
+tests = Enter.run
 
 if tests.passed?
   puts tests.summary

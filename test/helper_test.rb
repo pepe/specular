@@ -1,4 +1,4 @@
-module SpineTest
+module EnterTest
   class HelperTest < MiniTest::Unit::TestCase
 
     module HelperTestMixin
@@ -12,7 +12,7 @@ module SpineTest
     end
 
     def test_include
-      Spine.task __method__ do
+      Enter.task __method__ do
 
         include HelperTestMixin
 
@@ -20,13 +20,13 @@ module SpineTest
         does('Captain Jack').looks_like_jack?
         o 'looks_like_jack? passed'
       end
-      output = Spine.run(__method__).output.to_s
+      output = Enter.run(__method__).output.to_s
       assert_match /include test passed/, output
       assert_match /looks_like_jack\? passed/, output
     end
 
     def test_def
-      Spine.task __method__ do
+      Enter.task __method__ do
 
         def another_helper
           'def test passed'
@@ -42,7 +42,7 @@ module SpineTest
         does(pizza).contain? 'Cheese'
         o 'Oh, seems we got a delicious pizza!'
       end
-      output = Spine.run(__method__).output.to_s
+      output = Enter.run(__method__).output.to_s
       assert_match /def test passed/, output
       assert_match /Oh\, seems we got a delicious pizza\!/, output
     end

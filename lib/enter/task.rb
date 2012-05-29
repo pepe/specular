@@ -1,7 +1,7 @@
-module Spine
+module Enter
   module Task
 
-    module SpineBaseMixin
+    module EnterBaseMixin
 
       def initialize *args, &proc
 
@@ -83,9 +83,9 @@ module Spine
       end
 
     end
-    include SpineBaseMixin
+    include EnterBaseMixin
 
-    module SpineFrontendMixin
+    module EnterFrontendMixin
 
       def include mdl
         self.class.class_exec { include mdl }
@@ -103,7 +103,7 @@ module Spine
       # please note that in case of nested tests,
       # children will override variables set by parents.
       # @example
-      #    Spine.task do
+      #    Enter.task do
       #
       #      before do
       #        @n = 0
@@ -132,19 +132,19 @@ module Spine
       end
 
     end
-    include SpineFrontendMixin
+    include EnterFrontendMixin
 
-    module SpineAssertMixin
+    module EnterAssertMixin
 
       [:is, :is?, :are, :are?, :does, :does?, :expect, :assert, :check].each do |meth|
         define_method meth do |*args, &proc|
-          ::Spine::Assert.new(true, self, __method__, args.first, &proc)
+          ::Enter::Assert.new(true, self, __method__, args.first, &proc)
         end
       end
 
       [:refute, :false?].each do |meth|
         define_method meth do |*args, &proc|
-          ::Spine::Assert.new(false, self, __method__, args.first, &proc)
+          ::Enter::Assert.new(false, self, __method__, args.first, &proc)
         end
       end
 
@@ -165,9 +165,9 @@ module Spine
       end
 
     end
-    include SpineAssertMixin
+    include EnterAssertMixin
 
-    module SpineTestMixin
+    module EnterTestMixin
 
       [:Should, :Spec, :Describe, :Context,
        :Test, :Testing,
@@ -244,7 +244,7 @@ module Spine
       end
 
     end
-    include SpineTestMixin
+    include EnterTestMixin
 
     class OutputProxy < Array
       attr_reader :host

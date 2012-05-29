@@ -1,4 +1,4 @@
-module Spine
+module Enter
   class Assert
 
     ASSERTS = [
@@ -17,7 +17,7 @@ module Spine
 
       @negative_keyword = @expect_true ? '' : 'NOT'
 
-      ruby_engine = ::Spine::Utils::RUBY_ENGINE
+      ruby_engine = ::Enter::Utils::RUBY_ENGINE
       ln = ruby_engine == 'rbx' || (ruby_engine == 'jruby' && RUBY_VERSION.to_f == 1.9) ? 1 : 2
       @file, @line = caller[ln].split(/\:in\s+`/).first.scan(/(.*)\:(\d+)$/).flatten
       @task.__enter__source_files__[@file] ||= ::File.readlines(@file)

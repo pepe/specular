@@ -1,4 +1,4 @@
-module Spine
+module Enter
   module Utils
 
     RUBY_ENGINE = ::Object.const_defined?(:RUBY_ENGINE) ? ::RUBY_ENGINE : 'ruby'
