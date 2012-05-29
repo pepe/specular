@@ -33,7 +33,7 @@ module Spine
   end
 end
 
-require 'spine/utils'
-require 'spine/assert'
-require 'spine/task'
-require 'spine/frontend'
+require 'enter/utils'
+require 'enter/assert'
+require 'enter/task'
+require 'enter/frontend'

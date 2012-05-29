@@ -18,15 +18,15 @@ module Spine
         task_class = Class.new { include ::Spine::Task }
         task_instance = task_class.new *task_args, &task_proc
 
-        @output.concat task_instance.__spine__output__
+        @output.concat task_instance.__enter__output__
 
-        @skipped_tasks += task_instance.__spine__skipped_tasks__
+        @skipped_tasks += task_instance.__enter__skipped_tasks__
 
-        @total_tests += task_instance.__spine__total_tests__
-        @skipped_tests += task_instance.__spine__skipped_tests__
+        @total_tests += task_instance.__enter__total_tests__
+        @skipped_tests += task_instance.__enter__skipped_tests__
 
-        @total_assertions += task_instance.__spine__total_assertions__
-        @failed_assertions.update task_instance.__spine__failed_assertions__
+        @total_assertions += task_instance.__enter__total_assertions__
+        @failed_assertions.update task_instance.__enter__failed_assertions__
       end
       self
     end

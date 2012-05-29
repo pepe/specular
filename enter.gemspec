@@ -1,16 +1,16 @@
 # -*- encoding: utf-8 -*-
 
-version = '0.2.0'
+version = '0.0.1'
 
 Gem::Specification.new do |s|
 
-  s.name = 'spine'
+  s.name = 'enter'
   s.version = version
   s.authors = ['Silviu Rusu']
   s.email = ['slivuz@gmail.com']
-  s.homepage = 'https://github.com/slivu/spine'
-  s.summary = 'spine-%s' % version
-  s.description = 'Inline specs for your unit tests'
+  s.homepage = 'https://github.com/slivu/enter'
+  s.summary = 'enter-%s' % version
+  s.description = 'Natural Testing in pure Ruby. No DSL. No Steroids. No Books. Just Testing.'
 
   s.required_ruby_version = '>= 1.8.7'
 

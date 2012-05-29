@@ -1,5 +1,5 @@
 
-[![Build Status](https://secure.travis-ci.org/slivu/spine.png)](http://travis-ci.org/slivu/spine)
+[![Build Status](https://secure.travis-ci.org/slivu/enter.png)](http://travis-ci.org/slivu/enter)
 
 <blockquote>
 <strong>"Would you rather Test-First or Debug-Later?"</strong>
@@ -23,11 +23,11 @@
 
 **Install**
 
-    $ gem install spine
+    $ gem install enter
 
 **Load**
 
-    require 'spine'
+    require 'enter'
 
 **Use**
 
@@ -231,7 +231,7 @@ Here is a live example:
 app.rb
 
 ```ruby
-require 'spine'
+require 'enter'
 
 class SomeClass
 
@@ -319,7 +319,7 @@ Running in terminal:
 
     ruby app.rb
 
-<img src="http://prestorb.org/spine/example-long.png">
+<img src="http://prestorb.org/enter/example-long.png">
 
 Aliases:
 
@@ -592,18 +592,18 @@ end
 Deploy
 ---
 
-First of all you have to install `spine`
+First of all you have to install `enter`
 
-    $ gem install spine
+    $ gem install enter
 
-If you also need HTTP functionality please install spine-http gem.<br/>
+If you also need HTTP functionality please install enter-http gem.<br/>
 It will let you use `get`, `post`, `visit` etc.<br/>
-[More details on spine-http](https://github.com/slivu/spine-http)
+[More details on enter-http](https://github.com/slivu/enter-http)
 
-Then simply require spine in your application and run defined tasks:
+Then simply require enter in your application and run defined tasks:
 
 ```ruby
-require 'spine'
+require 'enter'
 
 class App
 

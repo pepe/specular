@@ -20,66 +20,66 @@ module Spine
             :total_assertions => 0, :failed_assertions => {},
             :hooks => {:a => [], :z => []}, :browser => nil
         }
-        @__spine__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
+        @__enter__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
 
         if (skip = opts[:skip]) && (skip.is_a?(Proc) ? skip.call : true)
-          return __spine__skipped_tasks__ << __spine__current_task__
+          return __enter__skipped_tasks__ << __enter__current_task__
         end
 
-        __spine__output__ ''
-        __spine__output__ name
+        __enter__output__ ''
+        __enter__output__ name
 
-        catch __spine__fail_symbol__ do
+        catch __enter__fail_symbol__ do
           self.instance_exec *args, &proc
         end
 
       end
 
-      def __spine__output__ snippet = nil, color = nil
-        __spine__.output << [snippet.to_s, __spine__nesting_level__, color].compact if snippet
-        __spine__.output
+      def __enter__output__ snippet = nil, color = nil
+        __enter__.output << [snippet.to_s, __enter__nesting_level__, color].compact if snippet
+        __enter__.output
       end
 
-      def __spine__context__
-        __spine__.context
+      def __enter__context__
+        __enter__.context
       end
 
-      def __spine__current_task__
-        __spine__.current_task
+      def __enter__current_task__
+        __enter__.current_task
       end
 
-      def __spine__skipped_tasks__
-        __spine__.skipped_tasks
+      def __enter__skipped_tasks__
+        __enter__.skipped_tasks
       end
 
-      def __spine__source_files__
-        __spine__.source_files
+      def __enter__source_files__
+        __enter__.source_files
       end
 
-      def __spine__last_error__
-        (__spine__failed_assertions__.values.last || [])[4] || {}
+      def __enter__last_error__
+        (__enter__failed_assertions__.values.last || [])[4] || {}
       end
 
-      def __spine__fail_symbol__
-        ('__spine__fail_symbol__%s__' % __spine__context__.dup.last).to_sym
+      def __enter__fail_symbol__
+        ('__enter__fail_symbol__%s__' % __enter__context__.dup.last).to_sym
       end
 
-      def __spine__hooks__ position
-        __spine__.hooks[position].map do |map|
+      def __enter__hooks__ position
+        __enter__.hooks[position].map do |map|
           context, hook = map
-          hook if __spine__context__[0, context.size] == context
+          hook if __enter__context__[0, context.size] == context
         end.compact
       end
 
-      def __spine__nesting_level__ op = nil
-        __spine__.nesting_level += 1 if op == :+
-        __spine__.nesting_level -= 1 if op == :-
-        __spine__.nesting_level
+      def __enter__nesting_level__ op = nil
+        __enter__.nesting_level += 1 if op == :+
+        __enter__.nesting_level -= 1 if op == :-
+        __enter__.nesting_level
       end
 
       private
-      def __spine__
-        @__spine__vars_pool__
+      def __enter__
+        @__enter__vars_pool__
       end
 
     end
@@ -92,8 +92,8 @@ module Spine
       end
 
       def o s = nil
-        return __spine__.output.info(s) if s
-        __spine__.output
+        return __enter__.output.info(s) if s
+        __enter__.output
       end
 
       alias d o
@@ -124,11 +124,11 @@ module Spine
       #    end
       #
       def before &proc
-        __spine__.hooks[:a] << [__spine__context__.dup, proc]
+        __enter__.hooks[:a] << [__enter__context__.dup, proc]
       end
 
       def after &proc
-        __spine__.hooks[:z] << [__spine__context__.dup, proc]
+        __enter__.hooks[:z] << [__enter__context__.dup, proc]
       end
 
     end
@@ -148,20 +148,20 @@ module Spine
         end
       end
 
-      def __spine__total_assertions__ op = nil
-        __spine__.total_assertions += 1 if op == :+
-        __spine__.total_assertions
+      def __enter__total_assertions__ op = nil
+        __enter__.total_assertions += 1 if op == :+
+        __enter__.total_assertions
       end
 
-      def __spine__failed_assertions__ assertion = nil, error = nil
-        __spine__.failed_assertions[__spine__context__.dup] = [
-            (__spine__current_task__ || {})[:name],
-            (__spine__current_test__ || {})[:name],
+      def __enter__failed_assertions__ assertion = nil, error = nil
+        __enter__.failed_assertions[__enter__context__.dup] = [
+            (__enter__current_task__ || {})[:name],
+            (__enter__current_test__ || {})[:name],
             assertion,
             error,
-            __spine__nesting_level__
+            __enter__nesting_level__
         ] if assertion
-        __spine__.failed_assertions
+        __enter__.failed_assertions
       end
 
     end
@@ -177,11 +177,11 @@ module Spine
        :And, :Or, :Nor, :But, :However,
        :Via].each do |prefix|
         define_method prefix do |*args, &proc|
-          __spine__define_test__ prefix, *args, &proc
+          __enter__define_test__ prefix, *args, &proc
         end
       end
 
-      def __spine__define_test__ prefix, *args, &proc
+      def __enter__define_test__ prefix, *args, &proc
 
         proc || raise('--- tests need a proc to run ---')
 
@@ -189,29 +189,29 @@ module Spine
         goal = args.shift
         name = [prefix, goal].join(' ')
 
-        prev_test = __spine__current_test__
+        prev_test = __enter__current_test__
         this_test = {:name => name, :proc => proc,
-                     :task => (__spine__current_task__||{})[:name],
-                     :ident => __spine__nesting_level__}
+                     :task => (__enter__current_task__||{})[:name],
+                     :ident => __enter__nesting_level__}
 
         if (skip = opts[:skip]) && (skip.is_a?(Proc) ? skip.call : true)
-          return __spine__skipped_tests__ << this_test
+          return __enter__skipped_tests__ << this_test
         end
 
-        __spine__current_test__ this_test
-        __spine__total_tests__ :+
-        __spine__nesting_level__ :+
-        __spine__context__ << proc
-        __spine__output__(name)
+        __enter__current_test__ this_test
+        __enter__total_tests__ :+
+        __enter__nesting_level__ :+
+        __enter__context__ << proc
+        __enter__output__(name)
 
         # executing :before hooks
         execute_hooks = opts.has_key?(:hooks) ?
             opts[:hooks] == :before :
             true
         execute_hooks &&
-            __spine__hooks__(:a).each { |hook| self.instance_exec(goal, opts, &hook) }
+            __enter__hooks__(:a).each { |hook| self.instance_exec(goal, opts, &hook) }
 
-        catch __spine__fail_symbol__ do
+        catch __enter__fail_symbol__ do
           self.instance_exec &proc
         end
 
@@ -220,27 +220,27 @@ module Spine
             opts[:hooks] == :after :
             true
         execute_hooks &&
-            __spine__hooks__(:z).each { |hook| self.instance_exec(goal, opts, &hook) }
+            __enter__hooks__(:z).each { |hook| self.instance_exec(goal, opts, &hook) }
 
-        __spine__context__.pop
-        __spine__nesting_level__ :-
+        __enter__context__.pop
+        __enter__nesting_level__ :-
 
-        __spine__current_test__ prev_test
+        __enter__current_test__ prev_test
 
       end
 
-      def __spine__current_test__ *args
-        __spine__.current_test = args.first if args.size > 0
-        __spine__.current_test
+      def __enter__current_test__ *args
+        __enter__.current_test = args.first if args.size > 0
+        __enter__.current_test
       end
 
-      def __spine__total_tests__ op = nil
-        __spine__.total_tests += 1 if op == :+
-        __spine__.total_tests
+      def __enter__total_tests__ op = nil
+        __enter__.total_tests += 1 if op == :+
+        __enter__.total_tests
       end
 
-      def __spine__skipped_tests__
-        __spine__.skipped_tests
+      def __enter__skipped_tests__
+        __enter__.skipped_tests
       end
 
     end
@@ -255,12 +255,12 @@ module Spine
 
       [:info, :success, :warn, :alert, :error].each do |meth|
         define_method meth do |snippet|
-          self << [snippet.to_s, host.__spine__nesting_level__, __method__]
+          self << [snippet.to_s, host.__enter__nesting_level__, __method__]
         end
       end
 
       def last_error
-        self.error host.__spine__last_error__[:message]
+        self.error host.__enter__last_error__[:message]
       end
 
       def br
