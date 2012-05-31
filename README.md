@@ -72,15 +72,15 @@ puts Specular.run
 
 # Tutorial
 
-Tasks
+Specs
 ---
 
-**Specular** tasks can be defined anywhere in your code and executed anywhere too,
-by calling `Specular.run('task name')`,<br/>
-or just `Specular.run` to run all defined tasks.
+**Specular** specs can be defined anywhere in your code and executed anywhere too,
+by calling `Specular.run('spec name')`,<br/>
+or just `Specular.run` to run all defined specs.
 
 ```ruby
-# Defining tasks:
+# Defining specs:
 
 class TestedClass
 
@@ -95,41 +95,41 @@ class TestedClass
         # test your methods
     end
 
-    Spec.new :yet_another_task do
+    Spec.new :yet_another_spec do
         # test your methods
     end
 end
 
-# Running tasks:
+# Running specs:
 
-# run all tasks
+# run all specs
 Specular.run
 
-# run tasks starting with "test"
+# run specs starting with "test"
 Specular.run /^test/
 
-# run only "test_integers" task
+# run only "test_integers" spec
 Specular.run :test_integers
 ```
 
-To skip a task, use :skip option.<br/>
-If :skip is set to true, the task will always be skipped.
+To skip a spec, use :skip option.<br/>
+If :skip is set to true, the spec will always be skipped.
 
 ```ruby
-Spec.new :some_task, :skip => true do
+Spec.new :some_spec, :skip => true do
     # tests here will not run
 end
 ```
 
-If :skip is a proc, the task will be skipped only if proc returns a positive value.
+If :skip is a proc, the spec will be skipped only if proc returns a positive value.
 
 ```ruby
-Spec.new :some_task, :skip => proc { RUBY_VERSION.to_f == 1.8 } do
+Spec.new :some_spec, :skip => proc { RUBY_VERSION.to_f == 1.8 } do
     # tests here will not run
 end
 ```
 
-All arguments passed to tasks are available as block parameters.<br/>
+All arguments passed to specs are available as block parameters.<br/>
 Use convenient names to read them:
 
 ```ruby
@@ -453,8 +453,7 @@ Spec.new do
 end
 ```
 
-Also helpers can be defined directly inside tasks:
-
+Also helpers can be defined directly inside specs:
 
 ```ruby
 Spec.new do
@@ -477,7 +476,7 @@ Hooks
 
 `before` / `after` - executing code before/after each test.
 
-Hooks defined at task level will be executed by all tests inside task:
+Hooks defined at spec level will be executed by all tests inside spec:
 
 ```ruby
 Spec.new do
@@ -490,7 +489,7 @@ Spec.new do
     @page.destroy
   end
 
-  # all tests inside task will execute this hooks
+  # all tests inside spec will execute this hooks
 end
 ```
 
@@ -539,7 +538,7 @@ Spec.new do
 end
 ```
 
-Hooks can also be executed selectively or disabled at all for each task in part.
+Hooks can also be executed selectively or disabled at all for each spec in part.
 
 To disable all hooks, set :hooks option to `nil` or `false`:
 
@@ -600,7 +599,7 @@ If you also need HTTP functionality please install specular-http gem.<br/>
 It will let you use `get`, `post`, `visit` etc.<br/>
 [More details on specular-http](https://github.com/slivu/specular-http)
 
-Then simply require specular in your application and run defined tasks:
+Then simply require specular in your application and run defined specs:
 
 ```ruby
 require 'specular'
@@ -617,7 +616,7 @@ end
 puts Specular.run
 ```
 
-You can also run tasks separately:
+You can also run specs separately:
 
 ```ruby
 class News
@@ -662,7 +661,7 @@ Results can also be printed separately:
 *   `failures`    - details about failed tests
 *   `output`      - details about testing process
 *   `summary`
-*   `skipped_tasks`
+*   `skipped_specs`
 *   `skipped_tests`
 *   `exit code`    - 0 on success, 1 on failures
 
