@@ -1,3 +1,5 @@
+Specular - Unit Testing done naturally easy
+===
 
 [![Build Status](https://secure.travis-ci.org/slivu/specular.png)](http://travis-ci.org/slivu/specular)
 
