@@ -246,9 +246,9 @@ class SomeClass
     end
   end
 
-  Spec.new 'SomeTask' do
+  Spec.new 'SomeSpec' do
   
-    Spec 'BasicTests' do
+    Context :BasicTests do
 
       include TestingHelper
 
@@ -498,7 +498,7 @@ Hooks declared inside a test/context will run only for tests inside given test/c
 ```ruby
 Spec.new do
 
-    Spec 'SomeSpec' do
+    Context :SomeSpec do
 
       before do
         @page = Model::Page.new
@@ -576,7 +576,7 @@ Output
 `puts` & co. will print info somewhere on the fields too, however `o` will print the info in right place and optionally colorized.
 
 ```ruby
-Spec 'Creating new account' do
+Context 'Creating new account' do
 
     data = {name: rand, email: rand}
     o 'sending request ...'
@@ -607,9 +607,11 @@ require 'specular'
 class App
 
   Spec.new do
-      Spec 'SomeSpec' do
+    # some logic
+    Context :SomeSpec do
         # some logic
-      end
+    end
+    # some logic
   end
 end
 

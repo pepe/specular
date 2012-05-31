@@ -3,30 +3,30 @@ module Specular
 
     include Utils
 
-    def initialize tasks, opts = {}
-      @tasks, @opts = tasks, opts
+    def initialize specs, opts = {}
+      @specs, @opts = specs, opts
       @output = []
-      @skipped_tasks = []
+      @skipped_specs = []
       @total_tests, @skipped_tests = 0, []
       @total_assertions, @failed_assertions = 0, {}
     end
 
     def run
-      @tasks.each do |task|
+      @specs.each do |spec|
 
-        task_args, task_proc = task
-        task_class = Class.new { include ::Specular::Task }
-        task_instance = task_class.new *task_args, &task_proc
+        spec_args, spec_proc = spec
+        spec_class = Class.new { include ::Specular::Spec }
+        spec_instance = spec_class.new *spec_args, &spec_proc
 
-        @output.concat task_instance.__specular__output__
+        @output.concat spec_instance.__specular__output__
 
-        @skipped_tasks += task_instance.__specular__skipped_tasks__
+        @skipped_specs += spec_instance.__specular__skipped_specs__
 
-        @total_tests += task_instance.__specular__total_tests__
-        @skipped_tests += task_instance.__specular__skipped_tests__
+        @total_tests += spec_instance.__specular__total_tests__
+        @skipped_tests += spec_instance.__specular__skipped_tests__
 
-        @total_assertions += task_instance.__specular__total_assertions__
-        @failed_assertions.update task_instance.__specular__failed_assertions__
+        @total_assertions += spec_instance.__specular__total_assertions__
+        @failed_assertions.update spec_instance.__specular__failed_assertions__
       end
       self
     end
@@ -53,11 +53,11 @@ module Specular
       stdout
     end
 
-    def skipped_tasks
+    def skipped_specs
       reset_stdout
-      return stdout unless @skipped_tasks.size > 0
-      nl; stdout "--- Skipped Tasks ---", 0, :alert
-      @skipped_tasks.each do |t|
+      return stdout unless @skipped_specs.size > 0
+      nl; stdout "--- Skipped Specs ---", 0, :alert
+      @skipped_specs.each do |t|
         nl
         stdout '%s at %s' % [t[:name], proc_source(t[:proc])]
       end
@@ -70,7 +70,7 @@ module Specular
       nl; stdout "--- Skipped Tests ---", 0, :alert
       @skipped_tests.each do |t|
         nl
-        stdout t[:task]
+        stdout t[:spec]
         stdout '%s at %s' % [t[:name], proc_source(t[:proc])], t[:ident] - 1
       end
       stdout
@@ -84,10 +84,10 @@ module Specular
       nl
       @failed_assertions.each_value do |setup|
 
-        task, test, assertion, error, ident = setup
+        spec, test, assertion, error, ident = setup
 
         nl
-        stdout task
+        stdout spec
         stdout test, ident
         stdout [Colorize.alert(assertion), error[:source]].join(' at '), ident
 
@@ -111,9 +111,8 @@ module Specular
               ]
           stdout message, ident
         end
-        if details = error[:details]
-          details.each { |e| stdout e[0], ident, e[1] }
-        end
+        (details = error[:details]) &&
+            details.each { |e| stdout e[0], ident, e[1] }
 
       end
 
@@ -125,14 +124,14 @@ module Specular
     def summary
       reset_stdout
       nl; stdout '---'
-      stdout 'Tasks:       %s%s' % [@tasks.size, @skipped_tasks.size > 0 ? ' (%s skipped)' % @skipped_tasks.size : '']
+      stdout 'Specs:       %s%s' % [@specs.size, @skipped_specs.size > 0 ? ' (%s skipped)' % @skipped_specs.size : '']
       stdout 'Tests:       %s%s' % [@total_tests, @skipped_tests.size > 0 ? ' (%s skipped)' % @skipped_tests.size : '']
       stdout 'Assertions:  %s%s' % [@total_assertions, passed? ? '' : ' (%s failed)' % failed], 0, passed? ? :success : :error
       stdout
     end
 
     def to_s
-      (output + skipped_tasks + skipped_tests + failures + summary).join("\n")
+      (output + skipped_specs + skipped_tests + failures + summary).join("\n")
     end
 
     private

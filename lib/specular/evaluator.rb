@@ -1,8 +1,9 @@
 module Specular
-  class Assert
+  class Evaluator
 
-    ASSERTS = [
-        :==, :===, :eql?, :equal?, :=~, '!=', '!~',
+    EVALUATORS = [
+        :==, :===, :eql?, :equal?, :=~,
+        '!=', '!~', # take care, this 2 methods wont work on ruby1.8
         :>, :>=, :<, :<=, :between?, :zero?,
         :ascii_only?, :empty?, :start_with?, :end_with?, :frozen?, :include?,
         :instance_of?, :is_a?, :kind_of?, :nil?, :respond_to?, :respond_to_missing?,
@@ -11,25 +12,25 @@ module Specular
         :private_method_defined?, :protected_method_defined?, :public_method_defined?,
     ].freeze
 
-    def initialize expect_true, task, proxy, object = nil, &proc
-      @expect_true, @task, @proxy, @object, @proc =
-          expect_true, task, proxy, object, proc
+    def initialize expect_true, spec, proxy, object = nil, &proc
+      @expect_true, @spec, @proxy, @object, @proc =
+          expect_true, spec, proxy, object, proc
 
       @negative_keyword = @expect_true ? '' : 'NOT'
 
       ruby_engine = ::Specular::Utils::RUBY_ENGINE
       ln = ruby_engine == 'rbx' || (ruby_engine == 'jruby' && RUBY_VERSION.to_f == 1.9) ? 1 : 2
       @file, @line = caller[ln].split(/\:in\s+`/).first.scan(/(.*)\:(\d+)$/).flatten
-      @task.__specular__source_files__[@file] ||= ::File.readlines(@file)
-      @assertion = @task.__specular__source_files__[@file][@line.to_i-1].strip
+      @spec.__specular__source_files__[@file] ||= ::File.readlines(@file)
+      @assertion = @spec.__specular__source_files__[@file][@line.to_i-1].strip
 
-      @task.__specular__total_assertions__ :+
+      @spec.__specular__total_assertions__ :+
     end
 
     def object
       @tested_object ||= if @proc
                            begin
-                             @task.instance_exec(&@proc)
+                             @spec.instance_exec(&@proc)
                            rescue => e
                              e
                            end
@@ -38,7 +39,7 @@ module Specular
                          end
     end
 
-    ASSERTS.each do |method|
+    EVALUATORS.each do |method|
       define_method method do |*expected|
         evaluate(:proxy => @proxy, :method => method, :expected => expected, :negative => method.to_s =~ /!/) do
           object.send method, *expected
@@ -84,12 +85,12 @@ module Specular
       begin
         if symbol && value
           begin
-            caught_value = catch(symbol) { @task.instance_exec(&@proc) }
+            caught_value = catch(symbol) { @spec.instance_exec(&@proc) }
           rescue => e
             return failed(:exception => e)
           end
         end
-        @task.instance_exec(&@proc)
+        @spec.instance_exec(&@proc)
       rescue => e
         prefix, caught_symbol = e.message.scan(/uncaught throw (\:|"|'|`)(.*)/).flatten
         case prefix
@@ -123,14 +124,14 @@ module Specular
     alias to_throw_symbol throw_symbol
 
     def method_missing meth, *args
-      evaluate(:message => 'failed') { @task.send meth, object, *args }
+      evaluate(:message => 'failed') { @spec.send meth, object, *args }
     end
 
     private
 
     def evaluate context = {}, &proc
-      @task.__specular__nesting_level__ :+
-      @task.__specular__output__ @assertion, :alert
+      @spec.__specular__nesting_level__ :+
+      @spec.__specular__output__ @assertion, :alert
 
       # any assertion marked as failed until it is explicitly passed
       passed = false
@@ -139,20 +140,20 @@ module Specular
 
         result = proc.call # evaluating assertion
         passed = (@expect_true ? result : !result)
-        passed && @task.__specular__output__.success('- passed')
+        passed && @spec.__specular__output__.success('- passed')
 
       rescue => e
         context[:exception] = e
       end
 
       passed || failed(context)
-      @task.__specular__nesting_level__ :-
+      @spec.__specular__nesting_level__ :-
     end
 
     def failed error = {}
-      @task.__specular__failed_assertions__ @assertion, error.update(:object => object, :source => [@file, @line].join(':'))
-      @task.__specular__output__ '- failed', :error
-      throw @task.__specular__fail_symbol__
+      @spec.__specular__failed_assertions__ @assertion, error.update(:object => object, :source => [@file, @line].join(':'))
+      @spec.__specular__output__ '- failed', :error
+      throw @spec.__specular__fail_symbol__
     end
 
   end

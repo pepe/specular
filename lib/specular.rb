@@ -9,23 +9,27 @@ class Spec
   #    end
   #
   def self.new *args, &proc
-    ::Specular.tasks << [args, proc]
+    ::Specular.spec *args, &proc
   end
 end
 
 module Specular
   class << self
 
-    def tasks
-      @tasks ||= []
+    def spec *args, &proc
+      specs << [args, proc]
+    end
+
+    def specs
+      @specs ||= []
     end
 
     def run *args
       @opts = args.last.is_a?(Hash) ? args.pop : {}
-      tasks = args.size > 0 ?
-          tasks().select { |t| args.select { |a| t=t.first.first.to_s; a.is_a?(Regexp) ? t =~ a : t == a.to_s }.size > 0 } :
-          tasks()
-      ::Specular::Frontend.new(tasks, @opts).run
+      specs = args.size > 0 ?
+          specs().select { |t| args.select { |a| t=t.first.first.to_s; a.is_a?(Regexp) ? t =~ a : t == a.to_s }.size > 0 } :
+          specs()
+      ::Specular::Frontend.new(specs, @opts).run
     end
 
     private
@@ -34,6 +38,6 @@ module Specular
 end
 
 require 'specular/utils'
-require 'specular/assert'
-require 'specular/task'
+require 'specular/spec'
+require 'specular/evaluator'
 require 'specular/frontend'

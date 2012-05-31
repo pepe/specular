@@ -1,11 +1,21 @@
 module Specular
-  module Task
+  module Spec
+
+    SPEC_ALIASES = [:Should, :Describe, :Context,
+                    :Test, :Testing, :Set, :Setting,
+                    :Given, :When, :Then,
+                    :It, :He, :She,
+                    :If, :Let, :Say, :Assume, :Suppose,
+                    :And, :Or, :Nor, :But, :However]
+
+    ASSERT_ALIASES = [:is, :is?, :are, :are?, :does, :does?, :expect, :assert, :check]
+    NEGATIVE_ASSERT_ALIASES = [:refute, :false?]
 
     module SpecularBaseMixin
 
       def initialize *args, &proc
 
-        proc || raise('--- tasks need a proc to run ---')
+        proc || raise('--- specs need a proc to run ---')
 
         opts = args.last.is_a?(Hash) ? args.pop : {}
         name = args.first
@@ -15,7 +25,7 @@ module Specular
         vars = {
             :nesting_level => 0, :context => [],
             :output => output, :source_files => {},
-            :current_task => {:name => name, :proc => proc}, :skipped_tasks => [],
+            :current_spec => {:name => name, :proc => proc}, :skipped_specs => [],
             :current_test => nil, :total_tests => 0, :skipped_tests => [],
             :total_assertions => 0, :failed_assertions => {},
             :hooks => {:a => [], :z => []}, :browser => nil
@@ -23,7 +33,7 @@ module Specular
         @__specular__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
 
         if (skip = opts[:skip]) && (skip.is_a?(Proc) ? skip.call : true)
-          return __specular__skipped_tasks__ << __specular__current_task__
+          return __specular__skipped_specs__ << __specular__current_spec__
         end
 
         __specular__output__ ''
@@ -44,12 +54,12 @@ module Specular
         __specular__.context
       end
 
-      def __specular__current_task__
-        __specular__.current_task
+      def __specular__current_spec__
+        __specular__.current_spec
       end
 
-      def __specular__skipped_tasks__
-        __specular__.skipped_tasks
+      def __specular__skipped_specs__
+        __specular__.skipped_specs
       end
 
       def __specular__source_files__
@@ -136,15 +146,15 @@ module Specular
 
     module SpecularAssertMixin
 
-      [:is, :is?, :are, :are?, :does, :does?, :expect, :assert, :check].each do |meth|
+      ASSERT_ALIASES.each do |meth|
         define_method meth do |*args, &proc|
-          ::Specular::Assert.new(true, self, __method__, args.first, &proc)
+          ::Specular::Evaluator.new(true, self, __method__, args.first, &proc)
         end
       end
 
-      [:refute, :false?].each do |meth|
+      NEGATIVE_ASSERT_ALIASES.each do |meth|
         define_method meth do |*args, &proc|
-          ::Specular::Assert.new(false, self, __method__, args.first, &proc)
+          ::Specular::Evaluator.new(false, self, __method__, args.first, &proc)
         end
       end
 
@@ -155,7 +165,7 @@ module Specular
 
       def __specular__failed_assertions__ assertion = nil, error = nil
         __specular__.failed_assertions[__specular__context__.dup] = [
-            (__specular__current_task__ || {})[:name],
+            (__specular__current_spec__ || {})[:name],
             (__specular__current_test__ || {})[:name],
             assertion,
             error,
@@ -169,12 +179,7 @@ module Specular
 
     module SpecularTestMixin
 
-      [:Should, :Spec, :Describe, :Context,
-       :Test, :Testing, :Set, :Setting,
-       :Given, :When, :Then,
-       :It, :He, :She,
-       :If, :Let, :Say, :Assume, :Suppose,
-       :And, :Or, :Nor, :But, :However].each do |prefix|
+      SPEC_ALIASES.each do |prefix|
         define_method prefix do |*args, &proc|
           __specular__define_test__ prefix, *args, &proc
         end
@@ -190,7 +195,7 @@ module Specular
 
         prev_test = __specular__current_test__
         this_test = {:name => name, :proc => proc,
-                     :task => (__specular__current_task__||{})[:name],
+                     :spec => (__specular__current_spec__||{})[:name],
                      :ident => __specular__nesting_level__}
 
         if (skip = opts[:skip]) && (skip.is_a?(Proc) ? skip.call : true)

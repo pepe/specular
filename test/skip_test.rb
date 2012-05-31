@@ -1,9 +1,9 @@
 module SpecularTest
   class SkipTest < MiniTest::Unit::TestCase
 
-    def test_task
-      Spec.new :skip_test_task_I, :skip => true do
-        Spec 'should not be executed' do
+    def test_spec
+      Spec.new :skip_test_spec_I, :skip => true do
+        Context 'should not be executed' do
 
           is(1) == 1
 
@@ -11,19 +11,19 @@ module SpecularTest
           end
         end
       end
-      Spec.new :skip_test_task_conditional, :skip => proc { true } do
+      Spec.new :skip_test_spec_conditional, :skip => proc { true } do
         is(11) == 1
       end
-      Spec.new :skip_test_task_II do
-        Spec 'someSpec' do
+      Spec.new :skip_test_spec_II do
+        Context 'someSpec' do
           Should 'be executed' do
             is(2) == 2
           end
         end
       end
-      output = Specular.run(/skip_test_task/).to_s
-      assert_match /Skipped Tasks.*skip_test_task_I at/m, output
-      assert_match /Tasks\:\s+3 \(2 skipped\)$/, output
+      output = Specular.run(/skip_test_spec/).to_s
+      assert_match /Skipped Specs.*skip_test_spec_I at/m, output
+      assert_match /Specs\:\s+3 \(2 skipped\)$/, output
       assert_match /Tests\:\s+2$/, output
       assert_match /Assertions\:\s+|\[2$/, output
       assert_match /Should be executed/, output
