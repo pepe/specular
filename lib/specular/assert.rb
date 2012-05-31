@@ -1,4 +1,4 @@
-module Enter
+module Specular
   class Assert
 
     ASSERTS = [
@@ -17,13 +17,13 @@ module Enter
 
       @negative_keyword = @expect_true ? '' : 'NOT'
 
-      ruby_engine = ::Enter::Utils::RUBY_ENGINE
+      ruby_engine = ::Specular::Utils::RUBY_ENGINE
       ln = ruby_engine == 'rbx' || (ruby_engine == 'jruby' && RUBY_VERSION.to_f == 1.9) ? 1 : 2
       @file, @line = caller[ln].split(/\:in\s+`/).first.scan(/(.*)\:(\d+)$/).flatten
-      @task.__enter__source_files__[@file] ||= ::File.readlines(@file)
-      @assertion = @task.__enter__source_files__[@file][@line.to_i-1].strip
+      @task.__specular__source_files__[@file] ||= ::File.readlines(@file)
+      @assertion = @task.__specular__source_files__[@file][@line.to_i-1].strip
 
-      @task.__enter__total_assertions__ :+
+      @task.__specular__total_assertions__ :+
     end
 
     def object
@@ -129,8 +129,8 @@ module Enter
     private
 
     def evaluate context = {}, &proc
-      @task.__enter__nesting_level__ :+
-      @task.__enter__output__ @assertion, :alert
+      @task.__specular__nesting_level__ :+
+      @task.__specular__output__ @assertion, :alert
 
       # any assertion marked as failed until it is explicitly passed
       passed = false
@@ -139,20 +139,20 @@ module Enter
 
         result = proc.call # evaluating assertion
         passed = (@expect_true ? result : !result)
-        passed && @task.__enter__output__.success('- passed')
+        passed && @task.__specular__output__.success('- passed')
 
       rescue => e
         context[:exception] = e
       end
 
       passed || failed(context)
-      @task.__enter__nesting_level__ :-
+      @task.__specular__nesting_level__ :-
     end
 
     def failed error = {}
-      @task.__enter__failed_assertions__ @assertion, error.update(:object => object, :source => [@file, @line].join(':'))
-      @task.__enter__output__ '- failed', :error
-      throw @task.__enter__fail_symbol__
+      @task.__specular__failed_assertions__ @assertion, error.update(:object => object, :source => [@file, @line].join(':'))
+      @task.__specular__output__ '- failed', :error
+      throw @task.__specular__fail_symbol__
     end
 
   end

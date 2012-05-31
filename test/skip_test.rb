@@ -1,8 +1,8 @@
-module EnterTest
+module SpecularTest
   class SkipTest < MiniTest::Unit::TestCase
 
     def test_task
-      Enter.task :skip_test_task_I, :skip => true do
+      Spec.new :skip_test_task_I, :skip => true do
         Spec 'should not be executed' do
 
           is(1) == 1
@@ -11,17 +11,17 @@ module EnterTest
           end
         end
       end
-      Enter.task :skip_test_task_conditional, :skip => proc { true } do
+      Spec.new :skip_test_task_conditional, :skip => proc { true } do
         is(11) == 1
       end
-      Enter.task :skip_test_task_II do
+      Spec.new :skip_test_task_II do
         Spec 'someSpec' do
           Should 'be executed' do
             is(2) == 2
           end
         end
       end
-      output = Enter.run(/skip_test_task/).to_s
+      output = Specular.run(/skip_test_task/).to_s
       assert_match /Skipped Tasks.*skip_test_task_I at/m, output
       assert_match /Tasks\:\s+3 \(2 skipped\)$/, output
       assert_match /Tests\:\s+2$/, output
@@ -34,7 +34,7 @@ module EnterTest
     end
 
     def test_test
-      Enter.task __method__ do
+      Spec.new __method__ do
         Context do
           Should 'be skipped', :skip => true do
 
@@ -60,7 +60,7 @@ module EnterTest
           end
         end
       end
-      output = Enter.run(__method__).to_s
+      output = Specular.run(__method__).to_s
       assert_match /Skipped Tests.*#{__method__}.*Should be skipped at/m, output
       assert_match /Tests\:\s+4 \(2 skipped\)/, output
       assert_match /Should be executed/, output

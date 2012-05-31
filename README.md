@@ -1,5 +1,5 @@
 
-[![Build Status](https://secure.travis-ci.org/slivu/enter.png)](http://travis-ci.org/slivu/enter)
+[![Build Status](https://secure.travis-ci.org/slivu/specular.png)](http://travis-ci.org/slivu/specular)
 
 <blockquote>
 <strong>"Would you rather Test-First or Debug-Later?"</strong>
@@ -23,11 +23,11 @@
 
 **Install**
 
-    $ gem install enter
+    $ gem install specular
 
 **Load**
 
-    require 'enter'
+    require 'specular'
 
 **Use**
 
@@ -40,7 +40,7 @@ class Controller
     end
 
     # tests
-    Enter.task :buy do
+    Spec.new :buy do
 
         product = Model::Product.first
 
@@ -65,7 +65,7 @@ class Controller
 end
 
 # running tests
-puts Enter.run
+puts Specular.run
 ```
 
 <hr/>
@@ -75,9 +75,9 @@ puts Enter.run
 Tasks
 ---
 
-Enter tasks can be defined anywhere in your code and executed anywhere too,
-by calling `Enter.run('task name')`,<br/>
-or just `Enter.run` to run all defined tasks.
+**Specular** tasks can be defined anywhere in your code and executed anywhere too,
+by calling `Specular.run('task name')`,<br/>
+or just `Specular.run` to run all defined tasks.
 
 ```ruby
 # Defining tasks:
@@ -87,15 +87,15 @@ class TestedClass
     # define methods
     # ...
 
-    Enter.task :test_integers do
+    Spec.new :test_integers do
         # test your methods
     end
 
-    Enter.task :test_strings do
+    Spec.new :test_strings do
         # test your methods
     end
 
-    Enter.task :yet_another_task do
+    Spec.new :yet_another_task do
         # test your methods
     end
 end
@@ -103,20 +103,20 @@ end
 # Running tasks:
 
 # run all tasks
-Enter.run
+Specular.run
 
 # run tasks starting with "test"
-Enter.run /^test/
+Specular.run /^test/
 
 # run only "test_integers" task
-Enter.run :test_integers
+Specular.run :test_integers
 ```
 
 To skip a task, use :skip option.<br/>
 If :skip is set to true, the task will always be skipped.
 
 ```ruby
-Enter.task :some_task, :skip => true do
+Spec.new :some_task, :skip => true do
     # tests here will not run
 end
 ```
@@ -124,7 +124,7 @@ end
 If :skip is a proc, the task will be skipped only if proc returns a positive value.
 
 ```ruby
-Enter.task :some_task, :skip => proc { RUBY_VERSION.to_f == 1.8 } do
+Spec.new :some_task, :skip => proc { RUBY_VERSION.to_f == 1.8 } do
     # tests here will not run
 end
 ```
@@ -133,7 +133,7 @@ All arguments passed to tasks are available as block parameters.<br/>
 Use convenient names to read them:
 
 ```ruby
-Enter.task NewsController, NewsModel, :status => 1 do |controller, model, filter|
+Spec.new NewsController, NewsModel, :status => 1 do |controller, model, filter|
   item = model.find filter
   action = controller.http.route action
 end
@@ -145,7 +145,7 @@ Tests
 Defining a test is as easy as think about it.
 
 ```ruby
-Enter.task do
+Spec.new do
 
     Test :Nr1 do
         # some logic and assertions
@@ -160,7 +160,7 @@ end
 Tests can be unlimitedly nested.
 
 ```ruby
-Enter.task do
+Spec.new do
 
     Describe 'Testing theory of relativity' do
 
@@ -231,7 +231,7 @@ Here is a live example:
 app.rb
 
 ```ruby
-require 'enter'
+require 'specular'
 
 class SomeClass
 
@@ -246,7 +246,7 @@ class SomeClass
     end
   end
 
-  Enter.task 'SomeTask' do
+  Spec.new 'SomeTask' do
   
     Spec 'BasicTests' do
 
@@ -312,14 +312,14 @@ class SomeClass
   end
 end
 
-puts Enter.run
+puts Specular.run
 ```
 
 Running in terminal:
 
     ruby app.rb
 
-<img src="http://prestorb.org/enter/example-long.png">
+<img src="http://prestorb.org/specular/example-long.png">
 
 Aliases:
 
@@ -440,7 +440,7 @@ module SomeHelper
     end
 end
 
-Enter.task do
+Spec.new do
 
     include SomeModule
 
@@ -457,7 +457,7 @@ Also helpers can be defined directly inside tasks:
 
 
 ```ruby
-Enter.task do
+Spec.new do
 
     def between? val, min, max
         (min..max).include? val
@@ -480,7 +480,7 @@ Hooks
 Hooks defined at task level will be executed by all tests inside task:
 
 ```ruby
-Enter.task do
+Spec.new do
 
   before do
     @page = Model::Page.new
@@ -497,7 +497,7 @@ end
 Hooks declared inside a test/context will run only for tests inside given test/context:
 
 ```ruby
-Enter.task do
+Spec.new do
 
     Spec 'SomeSpec' do
 
@@ -518,7 +518,7 @@ Worth to note that in case of nested tests,
 children will override variables set by parents:
 
 ```ruby
-Enter.task do
+Spec.new do
 
   before do
     @n = 0
@@ -544,7 +544,7 @@ Hooks can also be executed selectively or disabled at all for each task in part.
 To disable all hooks, set :hooks option to `nil` or `false`:
 
 ```ruby
-Enter.task self do
+Spec.new self do
 
     before do
         @var, @val = 2.times.map { 5.times.map { ('a'..'z').to_a[rand(26)] }.join }
@@ -592,36 +592,36 @@ end
 Deploy
 ---
 
-First of all you have to install `enter`
+First of all you have to install `specular`
 
-    $ gem install enter
+    $ gem install specular
 
-If you also need HTTP functionality please install enter-http gem.<br/>
+If you also need HTTP functionality please install specular-http gem.<br/>
 It will let you use `get`, `post`, `visit` etc.<br/>
-[More details on enter-http](https://github.com/slivu/enter-http)
+[More details on specular-http](https://github.com/slivu/specular-http)
 
-Then simply require enter in your application and run defined tasks:
+Then simply require specular in your application and run defined tasks:
 
 ```ruby
-require 'enter'
+require 'specular'
 
 class App
 
-  Enter.task do
+  Spec.new do
       Spec 'SomeSpec' do
         # some logic
       end
   end
 end
 
-puts Enter.run
+puts Specular.run
 ```
 
 You can also run tasks separately:
 
 ```ruby
 class News
-    Enter.task News do
+    Spec.new News do
         # some logic
     end
 end
@@ -629,29 +629,29 @@ end
 module Forum
 
     class Members
-        Enter.task Forum::Members do
+        Spec.new Forum::Members do
             # some logic
         end
     end
 
     class Posts
-        Enter.task Forum::Posts do
+        Spec.new Forum::Posts do
             # some logic
         end
     end
 end
 
 # testing News Controller
-puts Enter.run News
+puts Specular.run News
 
 # testing Forum Members
-puts Enter.run Forum::Members
+puts Specular.run Forum::Members
 
 # testing Forum Posts
-puts Enter.run Forum::Posts
+puts Specular.run Forum::Posts
 
 # testing all Forum classes
-puts Enter.run /^Forum/
+puts Specular.run /^Forum/
 ```
 
 Results can also be printed separately:
@@ -667,7 +667,7 @@ Results can also be printed separately:
 *   `exit code`    - 0 on success, 1 on failures
 
 ```ruby
-tests = Enter.run
+tests = Specular.run
 
 if tests.passed?
   puts tests.summary

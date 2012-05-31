@@ -1,4 +1,4 @@
-module Enter
+module Specular
   class Frontend
 
     include Utils
@@ -15,18 +15,18 @@ module Enter
       @tasks.each do |task|
 
         task_args, task_proc = task
-        task_class = Class.new { include ::Enter::Task }
+        task_class = Class.new { include ::Specular::Task }
         task_instance = task_class.new *task_args, &task_proc
 
-        @output.concat task_instance.__enter__output__
+        @output.concat task_instance.__specular__output__
 
-        @skipped_tasks += task_instance.__enter__skipped_tasks__
+        @skipped_tasks += task_instance.__specular__skipped_tasks__
 
-        @total_tests += task_instance.__enter__total_tests__
-        @skipped_tests += task_instance.__enter__skipped_tests__
+        @total_tests += task_instance.__specular__total_tests__
+        @skipped_tests += task_instance.__specular__skipped_tests__
 
-        @total_assertions += task_instance.__enter__total_assertions__
-        @failed_assertions.update task_instance.__enter__failed_assertions__
+        @total_assertions += task_instance.__specular__total_assertions__
+        @failed_assertions.update task_instance.__specular__failed_assertions__
       end
       self
     end
@@ -105,9 +105,9 @@ module Enter
               Colorize.error(error[:message].to_s.strip) :
               '%s %s %s %s' % [
                   Colorize.warn(error[:proxy]),
-                  presenter__expected_vs_received(error[:object]),
+                  presspecular__expected_vs_received(error[:object]),
                   Colorize.warn(error[:method]),
-                  presenter__expected_vs_received(*error[:expected])
+                  presspecular__expected_vs_received(*error[:expected])
               ]
           stdout message, ident
         end
@@ -158,7 +158,7 @@ module Enter
       (@stdout||reset_stdout) << (color ? Colorize.send(color, str) : str)
     end
 
-    def presenter__expected_vs_received *objects
+    def presspecular__expected_vs_received *objects
       objects.map do |obj|
         [NilClass, String, Symbol].include?(obj.class) ? obj.inspect : obj
       end.join(', ')
