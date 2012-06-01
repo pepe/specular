@@ -158,11 +158,9 @@ class Specular
       if (exception = error[:exception]).is_a?(Exception)
         stdout exception.message, ident, :error
         if backtrace = exception.backtrace
-          if @opts[:trace]
-            backtrace.each { |s| stdout s, ident }
-          else
-            backtrace_alert = true
-          end
+          @opts[:trace] ?
+              backtrace.each { |s| stdout s, ident } :
+              backtrace_alert = true
         end
       else
         message = error[:message] ?
@@ -228,4 +226,3 @@ class Specular
   end
 
 end
-

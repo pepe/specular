@@ -478,35 +478,40 @@ end
 Global Hooks
 ---
 
-To run some code inside class that will run specs, use `Specular.boot` and `Specular.halt`.
+To run some code inside class that will run specs, use `Specular#boot` and `Specular#halt`.
 
-`Specular.boot` block will run at class level before specs starts.
+`Specular#boot` block will run at class level before specs starts.
 
-`Specular.halt` block will run at class level after specs finished.
+`Specular#halt` block will run at class level after specs finished.
 
 **Example:** load rack-test methods before specs initialized
 
 ```ruby
-Specular.boot do
+session = Specular.new
+session.boot do
     include Rack::Test::Methods
 end
 
-Specular.run
+puts session.run
 ```
 
-To run some code inside each spec instance, use `Specular.before` and `Specular.after`.
+To run some code inside each spec instance, use `Specular#before` and `Specular#after`.
 
-`Specular.before` will run just before spec starting.
+`Specular#before` will run just before spec starting.
 
-`Specular.after` will run after spec finished.
+`Specular#after` will run after spec finished.
 
 **Example:** set app and map for [Motor Browser](https://github.com/slivu/motor)
 
 ```ruby
-Specular.before do
-    app MyRackApp
-    map '/some/path'
+session = Specular.new do
+    before do
+        app MyRackApp
+        map '/some/path'
+    end
 end
+
+puts session.run
 ```
 
 **Note:** All hooks will run unconditionally, even if there was failed tests.
