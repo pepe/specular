@@ -15,13 +15,12 @@ Robert Martin
 Leonardo da Vinci
 </blockquote>
 
-### Motivation
+### Highlights
 
-*   I do not want to learn how to test. I simply want to ask Ruby: is `foo == bar`, or does `foo` respond to `bar` etc.
-*   No monkey patching. I need tested objects and Ruby classes to stay pristine.
-*   Occasionally, i need to write code and run tests simultaneously, on same page, keeping the visual contact.
-    I can later move tests to right place, but when writing code i need to have running tests nearby, cause switching files leads to attention disruption.
-*   I need verbose, granular and manageable output.
+*   Simple. No need to learn redundant techniques. Simply ask Ruby: is `foo == bar`, or does `foo` respond to `bar` etc.
+*   No monkey patching. Tested objects and Ruby classes stay pristine.
+*   Inline Specs. Write code and tests on same page. Tests can be moved to right place anytime.
+*   Verbose, granular and manageable output.
 
 ### Getting Started
 
