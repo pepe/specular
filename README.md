@@ -5,12 +5,12 @@ Specular - Unit Testing done naturally and easy
 
 <blockquote>
 <strong>"Would you rather Test-First or Debug-Later?"</strong><br/>
-\- Robert Martin
+ - Robert Martin
 </blockquote>
 
 <blockquote>
 <strong>"Simplicity is the ultimate sophistication"</strong><br/>
-\- Leonardo da Vinci
+ - Leonardo da Vinci
 </blockquote>
 
 ### Motivation
