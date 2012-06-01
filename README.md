@@ -686,20 +686,22 @@ module Forum
     end
 end
 
+session = Specular.new
+
 # testing News Controller
-puts Specular.run News
+puts session.run News
 
 # testing Forum Members
-puts Specular.run Forum::Members
+puts session.run Forum::Members
 
 # testing Forum Posts
-puts Specular.run Forum::Posts
+puts session.run Forum::Posts
 
 # testing all Forum classes
-puts Specular.run /^Forum/
+puts session.run /^Forum/
 ```
 
-Results can be printed separately:
+Results can be printed separately either:
 
 *   `passed?`     - returns true if all tests passed
 *   `failed?`     - returns true if at least one test failed
