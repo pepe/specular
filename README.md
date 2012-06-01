@@ -78,7 +78,7 @@ puts Specular.run
 Specs
 ---
 
-**Specular** specs can be defined anywhere in your code and executed anywhere too,
+Specs can be defined anywhere in your code and executed anywhere too,
 by calling `Specular.run('spec name')`,<br/>
 or just `Specular.run` to run all defined specs.
 
@@ -128,7 +128,7 @@ If :skip is a proc, the spec will be skipped only if proc returns a positive val
 
 ```ruby
 Spec.new :some_spec, :skip => proc { RUBY_VERSION.to_f == 1.8 } do
-    # tests here will not run
+    # tests here will not run for ruby1.8
 end
 ```
 
@@ -145,7 +145,7 @@ end
 Tests
 ---
 
-Defining a test is as easy as think about it.
+Defining a test is as easy as thinking about it.
 
 ```ruby
 Spec.new do
@@ -214,16 +214,20 @@ No code is wiser than no code.
 Let's suppose `foo` is tested object and `bar` is expected value.<br/>
 According to rule of two brackets, the test will look like this:
 
-    is?(foo) == bar
+```ruby
+is?(foo) == bar
+```
 
 Simple? Huh?<br/>
 Let's play a bit...
 
-    is?(foo) > bar
-    does?(foo) =~ bar
-    are(foo).instance_of? bar
-    does(foo).respond_to? bar
-    # etc
+```ruby
+is?(foo) > bar
+does?(foo) =~ bar
+are(foo).instance_of? bar
+does(foo).respond_to? bar
+# etc
+```
 
 Looks nice and grammatically correctly.
 
@@ -641,9 +645,7 @@ First of all you have to install `specular`
 
     $ gem install specular
 
-If you also need HTTP functionality please install specular-http gem.<br/>
-It will let you use `get`, `post`, `visit` etc.<br/>
-[More details on specular-http](https://github.com/slivu/specular-http)
+If HTTP functionality needed you can install [Motor](https://github.com/slivu/motor) or rack-test.<br/>
 
 Then simply require specular in your application and run defined specs:
 
@@ -653,11 +655,7 @@ require 'specular'
 class App
 
   Spec.new do
-    # some logic
-    Context :SomeSpec do
-        # some logic
-    end
-    # some logic
+    # some tests/assertions
   end
 end
 
@@ -701,23 +699,19 @@ puts Specular.run Forum::Posts
 puts Specular.run /^Forum/
 ```
 
-```ruby
-Specular.run /PrestoTest/ do
-    include Motor::Mixin
-end
-```
-
 Results can be printed separately:
 
 *   `passed?`     - returns true if all tests passed
 *   `failed?`     - returns true if at least one test failed
 *   `failed`      - failed tests amount
 *   `failures`    - details about failed tests
-*   `output`      - details about testing process
 *   `summary`
 *   `skipped_specs`
 *   `skipped_tests`
+*   `output`       - all of the above
 *   `exit code`    - 0 on success, 1 on failures
+
+**Example:**
 
 ```ruby
 tests = Specular.run
