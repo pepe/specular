@@ -17,8 +17,8 @@ Leonardo da Vinci
 
 ### Highlights
 
-*   Simple. No need to learn redundant techniques. Simply ask Ruby: is `foo == bar`, or does `foo` respond to `bar` etc.
-*   No monkey patching. Tested objects and Ruby classes stay pristine.
+*   Natural and Simple. No need to learn redundant techniques. Simply ask Ruby: is `foo == bar`, or does `foo` respond to `bar` etc.
+*   No monkey patching. Tested objects and Ruby classes kept pristine.
 *   Inline Specs. Write code and tests on same page. Tests can be moved to right place anytime.
 *   Verbose, granular and manageable output.
 
