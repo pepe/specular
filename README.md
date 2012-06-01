@@ -1,17 +1,17 @@
-Specular - Unit Testing done naturally easy
+Specular - Unit Testing done naturally and easy
 ===
 
 [![Build Status](https://secure.travis-ci.org/slivu/specular.png)](http://travis-ci.org/slivu/specular)
 
 <blockquote>
-<strong>"Would you rather Test-First or Debug-Later?"</strong>
-</blockquote>
+<strong>"Would you rather Test-First or Debug-Later?"</strong><br/>
 \- Robert Martin
+</blockquote>
 
 <blockquote>
-<strong>"Simplicity is the ultimate sophistication"</strong>
-</blockquote>
+<strong>"Simplicity is the ultimate sophistication"</strong><br/>
 \- Leonardo da Vinci
+</blockquote>
 
 ### Motivation
 
@@ -197,6 +197,8 @@ Given 'user clicked register', :skip => true do
 end
 ```
 
+If :skip is a proc, the test will be skipped only if proc returns a positive value.
+
 Assertions
 ---
 
@@ -250,7 +252,7 @@ class SomeClass
 
   Spec.new 'SomeSpec' do
   
-    Context :BasicTests do
+    Describe :BasicTests do
 
       include TestingHelper
 
@@ -473,7 +475,43 @@ Spec.new do
 end
 ```
 
-Hooks
+Global Hooks
+---
+
+To run some code inside class that will run specs, use `Specular.boot` and `Specular.halt`.
+
+`Specular.boot` block will run at class level before specs starts.
+
+`Specular.halt` block will run at class level after specs finished.
+
+**Example:** load rack-test methods before specs initialized
+
+```ruby
+Specular.boot do
+    include Rack::Test::Methods
+end
+
+Specular.run
+```
+
+To run some code inside each spec instance, use `Specular.before` and `Specular.after`.
+
+`Specular.before` will run just before spec starting.
+
+`Specular.after` will run after spec finished.
+
+**Example:** set app and map for [Motor Browser](https://github.com/slivu/motor)
+
+```ruby
+Specular.before do
+    app MyRackApp
+    map '/some/path'
+end
+```
+
+**Note:** All hooks will run unconditionally, even if there was failed tests.
+
+Local Hooks
 ---
 
 `before` / `after` - executing code before/after each test.
@@ -657,7 +695,13 @@ puts Specular.run Forum::Posts
 puts Specular.run /^Forum/
 ```
 
-Results can also be printed separately:
+```ruby
+Specular.run /PrestoTest/ do
+    include Motor::Mixin
+end
+```
+
+Results can be printed separately:
 
 *   `passed?`     - returns true if all tests passed
 *   `failed?`     - returns true if at least one test failed

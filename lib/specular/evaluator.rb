@@ -1,4 +1,4 @@
-module Specular
+class Specular
   class Evaluator
 
     EVALUATORS = [

@@ -1,4 +1,4 @@
-module Specular
+class Specular
   module Spec
 
     SPEC_ALIASES = [:Should, :Describe, :Context,
@@ -13,36 +13,39 @@ module Specular
 
     module SpecularBaseMixin
 
-      def initialize *args, &proc
-
-        proc || raise('--- specs need a proc to run ---')
-
-        opts = args.last.is_a?(Hash) ? args.pop : {}
-        name = args.first
-
-        output = OutputProxy.new self
+      def initialize
 
         vars = {
             :nesting_level => 0, :context => [],
-            :output => output, :source_files => {},
-            :current_spec => {:name => name, :proc => proc}, :skipped_specs => [],
+            :output => OutputProxy.new(self), :source_files => {},
+            :current_spec => nil, :skipped_specs => [],
             :current_test => nil, :total_tests => 0, :skipped_tests => [],
             :total_assertions => 0, :failed_assertions => {},
             :hooks => {:a => [], :z => []}, :browser => nil
         }
         @__specular__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
 
+      end
+
+      def __specular__run__ *args, &proc
+
+        proc || raise('--- specs need a proc to run ---')
+
+        opts = args.last.is_a?(Hash) ? args.pop : {}
+        name = args.first
+
+        __specular__.current_spec = {:name => name, :proc => proc}
+
         if (skip = opts[:skip]) && (skip.is_a?(Proc) ? skip.call : true)
           return __specular__skipped_specs__ << __specular__current_spec__
         end
 
         __specular__output__ ''
-        __specular__output__ name
+        __specular__output__ __specular__current_spec__[:name]
 
         catch __specular__fail_symbol__ do
           self.instance_exec *args, &proc
         end
-
       end
 
       def __specular__output__ snippet = nil, color = nil

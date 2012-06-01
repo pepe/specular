@@ -1,10 +1,10 @@
-module Specular
+class Specular
   class Frontend
 
     include Utils
 
-    def initialize specs, opts = {}
-      @specs, @opts = specs, opts
+    def initialize specs, opts = {}, hooks = {}
+      @specs, @opts, @hooks = specs, opts, hooks
       @output = []
       @skipped_specs = []
       @total_tests, @skipped_tests = 0, []
@@ -16,7 +16,15 @@ module Specular
 
         spec_args, spec_proc = spec
         spec_class = Class.new { include ::Specular::Spec }
-        spec_instance = spec_class.new *spec_args, &spec_proc
+        spec_instance = spec_class.new
+
+        (h = @hooks[:boot]) && spec_class.class_exec(&h)
+        (h = @hooks[:before]) && spec_instance.instance_exec(&h)
+
+        spec_instance.__specular__run__ *spec_args, &spec_proc
+
+        (h = @hooks[:after]) && spec_instance.instance_exec(&h)
+        (h = @hooks[:halt]) && spec_class.class_exec(&h)
 
         @output.concat spec_instance.__specular__output__
 
