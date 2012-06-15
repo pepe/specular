@@ -38,34 +38,37 @@ class Specular
   end
 
   def initialize &proc
-    @hooks = {}
-    @output = []
-    @skipped_specs = []
-    @total_tests, @skipped_tests = 0, []
-    @total_assertions, @failed_assertions = 0, {}
+    @hooks = {
+        :boot => {},
+        :halt => {},
+        :before => {},
+        :after => {},
+    }
+    initialize_runner
     self.instance_exec(&proc) if proc
   end
 
-  def boot &proc
-    @hooks[:boot] = proc
+  def boot *specs, &proc
+    hook __method__, *specs, &proc
   end
 
-  def halt &proc
-    @hooks[:halt] = proc
+  def halt *specs, &proc
+    hook __method__, *specs, &proc
   end
 
-  def before &proc
-    @hooks[:before] = proc
+  def before *specs, &proc
+    hook __method__, *specs, &proc
   end
 
-  def after &proc
-    @hooks[:after] = proc
+  def after *specs, &proc
+    hook __method__, *specs, &proc
   end
 
   def run *args
+    initialize_runner
     @opts = args.last.is_a?(Hash) ? args.pop : {}
     @specs = args.size > 0 ?
-        self.class.specs().select { |t| args.select { |a| t=t.first.first.to_s; a.is_a?(Regexp) ? t =~ a : t == a.to_s }.size > 0 } :
+        self.class.specs().select { |s| args.select { |a| s=s.first.first.to_s; a.is_a?(Regexp) ? s =~ a : s == a.to_s }.size > 0 } :
         self.class.specs()
 
     @specs.each do |spec|
@@ -74,13 +77,13 @@ class Specular
       spec_class = Class.new { include ::Specular::Spec }
       spec_instance = spec_class.new
 
-      (h = @hooks[:boot]) && spec_class.class_exec(&h)
-      (h = @hooks[:before]) && spec_instance.instance_exec(&h)
+      hooks(spec, :boot).each { |h| spec_class.class_exec(&h) }
+      hooks(spec, :before).each { |h| spec_instance.instance_exec(&h) }
 
       spec_instance.__specular__run__ *spec_args, &spec_proc
 
-      (h = @hooks[:after]) && spec_instance.instance_exec(&h)
-      (h = @hooks[:halt]) && spec_class.class_exec(&h)
+      hooks(spec, :after).each { |h| spec_instance.instance_exec(&h) }
+      hooks(spec, :halt).each { |h| spec_class.class_exec(&h) }
 
       @output.concat spec_instance.__specular__output__
 
@@ -197,6 +200,25 @@ class Specular
   end
 
   private
+  def initialize_runner
+    @output = []
+    @skipped_specs = []
+    @total_tests, @skipped_tests = 0, []
+    @total_assertions, @failed_assertions = 0, {}
+  end
+
+  def hook position, *specs, &proc
+    specs = [:*] if specs.size == 0
+    specs.each { |s| @hooks[position][s] = proc }
+  end
+
+  def hooks spec, position
+    spec = spec.first.first
+    @hooks[position].map do |s, h|
+      h if (s == :*) || (s.is_a?(Regexp) ? spec.to_s =~ s : spec == s)
+    end.flatten.compact
+  end
+
   def nl
     stdout ''
   end

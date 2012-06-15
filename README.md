@@ -184,9 +184,14 @@ Tests uses capitalized names and should have a name/description passed as first 
 
 Aliases:
 
-`Test`, `Testing`, `Given`, `When`, `Then`, `It`, `If`, `Let`,
-`Say`, `Assume`, `Suppose`, `And`, `Or`, `Nor`, `But`, `However`,
-`Should`, `Describe`, `Spec`, `Context`
+<pre>
+:Should, :Describe, :Context,
+:Test, :Testing, :Set, :Setting,
+:Given, :When, :Then,
+:It, :He, :She,
+:If, :Let, :Say, :Assume, :Suppose,
+:And, :Or, :Nor, :But, :However
+</pre>
 
 Something missing? Please advise.
 
@@ -332,15 +337,13 @@ Running in terminal:
 
 Aliases:
 
-`is`,
-`is?`,
-`are`,
-`are?`,
-`does`,
-`does?`,
-`expect`,
-`assert`,
-`check`
+<pre>
+:is, :is?,
+:are, :are?,
+:does, :does?,
+:expect, :assert, :check,
+:refute, :false?
+</pre>
 
 Something missing? Please advise.
 
@@ -485,11 +488,14 @@ Global Hooks
 
 To run some code inside class that will run specs, use `Specular#boot` and `Specular#halt`.
 
+Pass any number of arguments to filter specs the hooks will be applied to.</br>
+Specs can be filtered by name or by regex.
+
 `Specular#boot` block will run at class level before specs starts.
 
 `Specular#halt` block will run at class level after specs finished.
 
-**Example:** load rack-test methods before specs initialized
+**Example:** load rack-test methods
 
 ```ruby
 session = Specular.new
@@ -500,19 +506,30 @@ end
 puts session.run
 ```
 
+**Example:** load rack-test methods only for App spec and specs containing Web
+
+```ruby
+session = Specular.new
+session.boot :App, /Web/ do
+    include Rack::Test::Methods
+end
+
+puts session.run
+```
+
+
 To run some code inside each spec instance, use `Specular#before` and `Specular#after`.
 
 `Specular#before` will run just before spec starting.
 
 `Specular#after` will run after spec finished.
 
-**Example:** set app and map for [Motor Browser](https://github.com/slivu/motor)
+**Example:**
 
 ```ruby
 session = Specular.new do
     before do
-        app MyRackApp
-        map '/some/path'
+        @some_var = 'some val'
     end
 end
 

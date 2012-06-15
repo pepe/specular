@@ -8,7 +8,10 @@ class Specular
                     :If, :Let, :Say, :Assume, :Suppose,
                     :And, :Or, :Nor, :But, :However]
 
-    ASSERT_ALIASES = [:is, :is?, :are, :are?, :does, :does?, :expect, :assert, :check]
+    ASSERT_ALIASES = [:is, :is?,
+                      :are, :are?,
+                      :does, :does?,
+                      :expect, :assert, :check]
     NEGATIVE_ASSERT_ALIASES = [:refute, :false?]
 
     module SpecularBaseMixin

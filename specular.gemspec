@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 1.8.7'
 
-  s.add_development_dependency 'rake', ['~> 0.8', '!= 0.9.0']
+  s.add_development_dependency 'rake', '~> 0.9.2'
   s.add_development_dependency 'minitest', '~> 3.0'
 
   s.require_paths = ['lib']
