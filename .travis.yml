@@ -12,4 +12,5 @@ rvm:
   - ree
 
 notifications:
-  irc: 'irc.freenode.org#prestorb'
+  email:
+    - slivuz@gmail.com

@@ -1,7 +1,7 @@
 class Specular
   module Spec
 
-    SPEC_ALIASES = [:Should, :Describe, :Context,
+    SPEC_ALIASES = [:Should, :Describe, :Context, :Ensure,
                     :Test, :Testing, :Set, :Setting,
                     :Given, :When, :Then,
                     :It, :He, :She,
