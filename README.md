@@ -559,8 +559,6 @@ session.boot do |app|
 end
 ```
 
-
-
 Local Hooks
 ---
 
