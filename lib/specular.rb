@@ -77,13 +77,13 @@ class Specular
       spec_class = Class.new { include ::Specular::Spec }
       spec_instance = spec_class.new
 
-      hooks(spec, :boot).each { |h| spec_class.class_exec(&h) }
-      hooks(spec, :before).each { |h| spec_instance.instance_exec(&h) }
+      hooks(spec, :boot).each { |h| spec_class.class_exec(*spec_args, &h) }
+      hooks(spec, :before).each { |h| spec_instance.instance_exec(*spec_args, &h) }
 
       spec_instance.__specular__run__ *spec_args, &spec_proc
 
-      hooks(spec, :after).each { |h| spec_instance.instance_exec(&h) }
-      hooks(spec, :halt).each { |h| spec_class.class_exec(&h) }
+      hooks(spec, :after).each { |h| spec_instance.instance_exec(*spec_args, &h) }
+      hooks(spec, :halt).each { |h| spec_class.class_exec(*spec_args, &h) }
 
       @output.concat spec_instance.__specular__output__
 
