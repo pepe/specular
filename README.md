@@ -185,7 +185,7 @@ Tests uses capitalized names and should have a name/description passed as first 
 Aliases:
 
 <pre>
-:Should, :Describe, :Context,
+:Should, :Describe, :Context, :Ensure,
 :Test, :Testing, :Set, :Setting,
 :Given, :When, :Then,
 :It, :He, :She,
@@ -486,7 +486,7 @@ end
 Global Hooks
 ---
 
-To run some code inside class that will run specs, use `Specular#boot` and `Specular#halt`.
+To execute some code inside class that will run specs, use `Specular#boot` and `Specular#halt`.
 
 Pass any number of arguments to filter specs the hooks will be applied to.</br>
 Specs can be filtered by name or by regex.
@@ -537,6 +537,29 @@ puts session.run
 ```
 
 **Note:** All hooks will run unconditionally, even if there was failed tests.
+
+Please note that parameters passed to spec are available for global/local hooks through arguments.
+
+**Example:**
+
+```ruby
+class TestedApp
+    # ...
+end
+
+Spec.new TestedApp do
+    # ...
+end
+
+\# now, from another context that does not know about TestedApp class
+session = Specular.new
+session.boot do |app|
+    puts app.name
+    #=> TestedApp
+end
+```
+
+
 
 Local Hooks
 ---
