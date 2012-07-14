@@ -159,6 +159,8 @@ end
 Tests
 ---
 
+**[ [top &uarr;](#tutorial) ]**
+
 Defining a test is as easy as thinking about it.
 
 ```ruby
@@ -221,6 +223,8 @@ If :skip is a proc, the test will be skipped only if proc returns a positive val
 
 Assertions
 ---
+
+**[ [top &uarr;](#tutorial) ]**
 
 To define assertions you should remember a single rule - "**The Rule of Two Brackets**".
 
@@ -367,6 +371,8 @@ Something missing? Please advise.
 Builtin Helpers
 ---
 
+**[ [top &uarr;](#tutorial) ]**
+
 ### raise_error
 
 Works only with blocks.
@@ -460,6 +466,8 @@ Aliases:
 Custom Helpers
 ---
 
+**[ [top &uarr;](#tutorial) ]**
+
 As simple as `include ModuleName`
 
 **Worth to note** that helpers receive tested object as first argument!
@@ -529,6 +537,8 @@ end
 
 Global Hooks
 ---
+
+**[ [top &uarr;](#tutorial) ]**
 
 To execute some code inside class that will run specs, use `Specular#boot` and `Specular#halt`.
 
@@ -605,6 +615,8 @@ end
 
 Local Hooks
 ---
+
+**[ [top &uarr;](#tutorial) ]**
 
 `before` / `after` - executing code before/after each test.
 
@@ -704,6 +716,8 @@ And to execute only :after hooks, set :hooks option to :after.<br/>
 Output
 ---
 
+**[ [top &uarr;](#tutorial) ]**
+
 `o` method allow to print additional info during testing process.<br/>
 `puts` & co. will print info somewhere on the fields too, however `o` will print the info in right place and optionally colorized.
 
@@ -722,6 +736,8 @@ end
 
 Deploy
 ---
+
+**[ [top &uarr;](#tutorial) ]**
 
 First of all you have to install `specular`
 
