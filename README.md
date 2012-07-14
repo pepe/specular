@@ -90,7 +90,7 @@ puts Specular.run
 Specs
 ---
 
-[[&uarr;](#tutorial)]
+**[[&uarr;](#tutorial)]**
 
 Specs can be defined anywhere in your code and executed anywhere too,
 by calling `Specular.run('spec name')`,<br/>
