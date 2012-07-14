@@ -333,7 +333,7 @@ Running in terminal:
 
     ruby app.rb
 
-<img src="http://prestorb.org/specular/example-long.png">
+<img src="https://github.com/slivu/specular/raw/master/example-long.png" />
 
 Aliases:
 
