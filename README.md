@@ -30,7 +30,9 @@ Leonardo da Vinci
 
 **Load**
 
-    require 'specular'
+```ruby
+require 'specular'
+```
 
 **Use**
 
