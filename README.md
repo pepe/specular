@@ -87,8 +87,10 @@ puts Specular.run
 <hr/>
 
 
-[[&uarr;](#tutorial)] Specs
+Specs
 ---
+
+[[&uarr;](#tutorial)]
 
 Specs can be defined anywhere in your code and executed anywhere too,
 by calling `Specular.run('spec name')`,<br/>
