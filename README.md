@@ -450,6 +450,13 @@ Custom Helpers
 
 As simple as `include ModuleName`
 
+**Worth to note** that helpers receive tested object as first argument!
+
+The arguments you pass goes after tested object.
+
+In example below, 2 arguments are passed, but the helper receives 3,
+cause the first one is the tested object.
+
 ```ruby
 module SomeHelper
     def between? val, min, max
