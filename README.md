@@ -477,6 +477,8 @@ The arguments you pass goes after tested object.
 In example below, 2 arguments are passed, but the helper receives 3,
 cause the first one is the tested object.
 
+Thus make sure your helpers accepts at least one argument.
+
 ```ruby
 module SomeHelper
     def between? val, min, max

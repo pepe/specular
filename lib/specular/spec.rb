@@ -26,7 +26,7 @@ class Specular
             :output => OutputProxy.new(self), :source_files => {},
             :current_spec => nil, :skipped_specs => [],
             :current_test => nil, :total_tests => 0, :skipped_tests => [],
-            :total_assertions => 0, :failed_assertions => {},
+            :assertions => [], :failed_assertions => {},
             :hooks => {:a => [], :z => []}, :browser => nil
         }
         @__specular__vars_pool__ = Struct.new(*vars.keys).new(*vars.values)
@@ -163,9 +163,8 @@ class Specular
         end
       end
 
-      def __specular__total_assertions__ op = nil
-        __specular__.total_assertions += 1 if op == :+
-        __specular__.total_assertions
+      def __specular__assertions__
+        __specular__.assertions
       end
 
       def __specular__failed_assertions__ assertion = nil, error = nil

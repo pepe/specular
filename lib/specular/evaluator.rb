@@ -18,13 +18,11 @@ class Specular
 
       @negative_keyword = @expect_true ? '' : 'NOT'
 
-      ruby_engine = ::Specular::Utils::RUBY_ENGINE
-      ln = ruby_engine == 'rbx' || (ruby_engine == 'jruby' && RUBY_VERSION.to_f == 1.9) ? 1 : 2
-      @file, @line = caller[ln].split(/\:in\s+`/).first.scan(/(.*)\:(\d+)$/).flatten
+      @file, @line = source_location
       @spec.__specular__source_files__[@file] ||= ::File.readlines(@file)
       @assertion = @spec.__specular__source_files__[@file][@line.to_i-1].strip
 
-      @spec.__specular__total_assertions__ :+
+      @spec.__specular__assertions__ << {:source => [@file, @line], :nested => false}
     end
 
     def object
@@ -124,7 +122,10 @@ class Specular
     alias to_throw_symbol throw_symbol
 
     def method_missing meth, *args
-      evaluate(:message => 'failed') { @spec.send meth, object, *args }
+      @spec.__specular__assertions__.last[:nested] = true
+      evaluate(:message => 'failed') do
+        @spec.send meth, object, *args
+      end
     end
 
     private
@@ -151,9 +152,19 @@ class Specular
     end
 
     def failed error = {}
-      @spec.__specular__failed_assertions__ @assertion, error.update(:object => object, :source => [@file, @line].join(':'))
+      source = (@spec.__specular__assertions__.select { |a| a[:nested] } <<
+          @spec.__specular__assertions__.last).map { |c| c[:source] }
+
+      @spec.__specular__failed_assertions__ @assertion, error.update(:object => object, :source => source)
       @spec.__specular__output__ '- failed', :error
       throw @spec.__specular__fail_symbol__
+    end
+
+    def source_location offset = 0
+      ruby_engine = ::Specular::Utils::RUBY_ENGINE
+      ln = ruby_engine == 'rbx' || (ruby_engine == 'jruby' && RUBY_VERSION.to_f == 1.9) ? 2 : 3
+      file, line = caller[ln + offset].split(/\:in\s+`/).first.scan(/(.*)\:(\d+)$/).flatten
+      [file, line]
     end
 
   end

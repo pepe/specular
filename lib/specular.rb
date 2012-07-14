@@ -92,7 +92,7 @@ class Specular
       @total_tests += spec_instance.__specular__total_tests__
       @skipped_tests += spec_instance.__specular__skipped_tests__
 
-      @total_assertions += spec_instance.__specular__total_assertions__
+      @total_assertions += spec_instance.__specular__assertions__.size
       @failed_assertions.update spec_instance.__specular__failed_assertions__
     end
     self
@@ -156,7 +156,9 @@ class Specular
       nl
       stdout spec
       stdout test, ident
-      stdout [Colorize.alert(assertion), error[:source]].join(' at '), ident
+      stdout Colorize.alert(assertion), ident
+      error[:source].each { |c| stdout c.join(':'), ident }
+      nl
 
       if (exception = error[:exception]).is_a?(Exception)
         stdout exception.message, ident, :error
