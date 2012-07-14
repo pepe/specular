@@ -153,8 +153,9 @@ class Specular
     end
 
     def failed error = {}
+      is_la_fw = @spec.__specular__assertions__.last[:fwd?]
       source = @spec.__specular__assertions__.select { |a| a.delete :fwd? }
-      source.empty? && source << @spec.__specular__assertions__.last
+      source << @spec.__specular__assertions__.last unless is_la_fw
       source.map! { |c| c[:source] }
 
       @spec.__specular__failed_assertions__ @assertion, error.update(:object => object, :source => source)
