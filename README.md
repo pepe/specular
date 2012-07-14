@@ -86,9 +86,8 @@ puts Specular.run
 
 <hr/>
 
-# Tutorial
 
-Specs
+[[&uarr;](#tutorial)] Specs
 ---
 
 Specs can be defined anywhere in your code and executed anywhere too,
