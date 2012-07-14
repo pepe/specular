@@ -19,7 +19,7 @@ Leonardo da Vinci
 
 *   Natural and Simple. No need to learn redundant techniques. Simply ask Ruby: is `foo == bar`
 *   No monkey patching. Tested objects and Ruby classes kept pristine.
-*   Inline Specs. Write code and tests on same page. Tests can be moved to right place anytime.
+*   Inline Specs. Write specs anywhere, this wont affect your runtime in any way.
 *   Verbose, granular and manageable output.
 
 ### Getting Started
@@ -49,13 +49,13 @@ class Controller
 
         Suppose 'user clicked Buy button' do
 
-            response = get("/buy/" << product.url)
+            get("/buy/" << product.url)
 
-            is?( response.status ) == 200
+            check( last_response.status ) == 200
 
             Then 'user should see the order details' do
 
-                does?( response.body ) =~ /order details/
+                prove( response.body ) =~ /order details/
 
                 And 'invitation to use credit card' do
 
@@ -342,6 +342,9 @@ Aliases:
 :are, :are?,
 :does, :does?,
 :expect, :assert, :check,
+:assume, :await, :affirm,
+:verify, :prove, :certify,
+:test, :try,
 :refute, :false?
 </pre>
 

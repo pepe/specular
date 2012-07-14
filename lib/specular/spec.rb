@@ -11,7 +11,10 @@ class Specular
     ASSERT_ALIASES = [:is, :is?,
                       :are, :are?,
                       :does, :does?,
-                      :expect, :assert, :check]
+                      :expect, :assert, :check,
+                      :assume, :await, :affirm,
+                      :verify, :prove, :certify,
+                      :test, :try]
     NEGATIVE_ASSERT_ALIASES = [:refute, :false?]
 
     module SpecularBaseMixin
