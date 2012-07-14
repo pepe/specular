@@ -75,10 +75,6 @@ class Specular
         __specular__.source_files
       end
 
-      def __specular__last_error__
-        (__specular__failed_assertions__.values.last || [])[4] || {}
-      end
-
       def __specular__fail_symbol__
         ('__specular__fail_symbol__%s__' % __specular__context__.dup.last).to_sym
       end
@@ -266,14 +262,16 @@ class Specular
         @host = host
       end
 
-      [:info, :success, :warn, :alert, :error].each do |meth|
+      [:info, :success, :warn, :alert].each do |meth|
         define_method meth do |snippet|
           self << [snippet.to_s, host.__specular__nesting_level__, __method__]
+          true
         end
       end
 
-      def last_error
-        self.error host.__specular__last_error__[:message]
+      define_method :error do |snippet|
+        self << [snippet.to_s, host.__specular__nesting_level__, __method__]
+        false
       end
 
       def br
