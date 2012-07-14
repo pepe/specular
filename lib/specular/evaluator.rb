@@ -22,7 +22,7 @@ class Specular
       @spec.__specular__source_files__[@file] ||= ::File.readlines(@file)
       @assertion = @spec.__specular__source_files__[@file][@line.to_i-1].strip
 
-      @spec.__specular__assertions__ << {:source => [@file, @line], :nested => false}
+      @spec.__specular__assertions__ << {:source => [@file, @line]}
     end
 
     def object
@@ -122,10 +122,11 @@ class Specular
     alias to_throw_symbol throw_symbol
 
     def method_missing meth, *args
-      @spec.__specular__assertions__.last[:nested] = true
+      @spec.__specular__assertions__.last[:fwd?] = true
       evaluate(:message => 'failed') do
         @spec.send meth, object, *args
       end
+      @spec.__specular__assertions__.each { |a| a.delete :fwd? }
     end
 
     private
@@ -152,8 +153,9 @@ class Specular
     end
 
     def failed error = {}
-      source = (@spec.__specular__assertions__.select { |a| a[:nested] } <<
-          @spec.__specular__assertions__.last).map { |c| c[:source] }
+      source = @spec.__specular__assertions__.select { |a| a.delete :fwd? }
+      source.empty? && source << @spec.__specular__assertions__.last
+      source.map! { |c| c[:source] }
 
       @spec.__specular__failed_assertions__ @assertion, error.update(:object => object, :source => source)
       @spec.__specular__output__ '- failed', :error
