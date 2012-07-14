@@ -470,7 +470,7 @@ Spec.new do
 end
 ```
 
-Also helpers can be defined directly inside specs:
+Helpers can also be defined directly inside specs:
 
 ```ruby
 Spec.new do
@@ -485,6 +485,26 @@ Spec.new do
     is(10).between? 1, 5
     # - failed
 
+end
+```
+
+```ruby
+Spec.new App do
+
+    def contain_suitable_headers? response, amount, *directives
+      actual = response.headers.values_at('Cache-Control', 'Expires')
+      expected = [
+          RouterUtils.compile_cache_control(*directives << {:max_age => amount}),
+          (Time.now + amount).httpdate
+      ]
+      is?(expected) == actual
+    end
+
+    get
+    does(last_response).contain_suitable_headers? 100, :public
+
+    get :private
+    does(last_response).contain_suitable_headers? 600, :private, :must_revalidate
 end
 ```
 
