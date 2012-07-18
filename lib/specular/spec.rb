@@ -10,7 +10,9 @@ class Specular
 
     ASSERT_ALIASES = [:is, :is?,
                       :are, :are?,
+                      :was, :was?,
                       :does, :does?,
+                      :did, :did?,
                       :expect, :assert, :check,
                       :assume, :await, :affirm,
                       :verify, :prove, :certify,
