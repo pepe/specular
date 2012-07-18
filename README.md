@@ -23,6 +23,7 @@ Leonardo da Vinci
 *   Verbose, granular and manageable output.
 
 ## Tutorial
+
 [Specs](#specs) |
 [Tests](#tests) |
 [Assertions](#assertions) |
