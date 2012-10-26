@@ -117,7 +117,8 @@ class Specular
       # explicitly mark a test as failed
       def fail error = 'failed'
         o.error error
-        __specular__failed_assertions__ '', {message: error, source: [caller[0].split(':')]}
+        error = {:message => error, :source => [caller[0].split(':')]}
+        __specular__failed_assertions__ '', error
         throw __specular__fail_symbol__
       end
       alias fail! fail
