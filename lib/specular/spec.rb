@@ -112,8 +112,15 @@ class Specular
         return __specular__.output.info(s) if s
         __specular__.output
       end
-
       alias d o
+
+      # explicitly mark a test as failed
+      def fail error = 'failed'
+        o.error error
+        __specular__failed_assertions__ '', {message: error, source: [caller[0].split(':')]}
+        throw __specular__fail_symbol__
+      end
+      alias fail! fail
 
       # blocks to be executed before/after each test.
       #
