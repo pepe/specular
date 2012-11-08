@@ -211,13 +211,15 @@ class Specular
 
   def hook position, *specs, &proc
     specs = [:*] if specs.size == 0
-    specs.each { |s| @hooks[position][s] = proc }
+    specs.each { |s| (@hooks[position][s] ||= []) << proc }
   end
 
   def hooks spec, position
     spec = spec.first.first
-    @hooks[position].map do |s, h|
-      h if (s == :*) || (s.is_a?(Regexp) ? spec.to_s =~ s : spec == s)
+    @hooks[position].map do |s, hooks|
+      hooks.map do |h|
+        h if (s == :*) || (s.is_a?(Regexp) ? spec.to_s =~ s : spec == s)
+      end
     end.flatten.compact
   end
 
