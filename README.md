@@ -3,8 +3,6 @@
 
 **Natural Unit Testing using Inline and/or Regular Specs**
 
-[![Build Status](https://secure.travis-ci.org/slivu/specular.png)](http://travis-ci.org/slivu/specular)
-
 <blockquote>
 <strong>"Would you rather Test-First or Debug-Later?"</strong><br/>
 Robert Martin
