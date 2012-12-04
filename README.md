@@ -1,4 +1,3 @@
-
 ### Specular
 
 **Natural Unit Testing using Inline and/or Regular Specs**
@@ -746,7 +745,7 @@ First of all you have to install `specular`
 
     $ gem install specular
 
-If HTTP functionality needed you can install [Motor](https://github.com/slivu/motor) or rack-test.<br/>
+If HTTP functionality needed you can install [Sonar](https://github.com/slivu/sonar) or rack-test.<br/>
 
 Then simply require specular in your application and run defined specs:
 
@@ -824,10 +823,6 @@ if tests.passed?
 else
   puts tests.output
   puts tests.failures
-end
-
-if tests.skipped_tests.size > 0
-  puts tests.skipped_tests
 end
 
 if tests.skipped_tests.size > 0
